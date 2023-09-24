@@ -3,7 +3,7 @@ export const COLORS = {
   PRIMARY_LIGHT: '#OA1936',
   PRIMARY_DARK: '#OA2D67',
   SECONDARY: '#OA2D67',
-};
+} as const;
 
 export const TEXT_COLORS = {
   HEADING: '#F3F3F3',
@@ -17,7 +17,7 @@ export const TEXT_COLORS = {
   WARNING: '#FFC97B',
   SUCCESS: '#9CF7A7',
   ERROR: '#F89B9B',
-};
+} as const;
 
 export const SURFACE_COLORS = {
   PAGE: '#04181F',
@@ -32,29 +32,34 @@ export const SURFACE_COLORS = {
   SUCCESS: '#0CC221',
   ERROR: '#C30C0B',
   BACKDROP: '#808599',
-};
+} as const;
 
 export const BORDERS_COLORS = {
   PRIMARY: '#575758',
   SECONDARY: '#4C4C4C',
   TERTIARY: '#303030',
-};
+} as const;
 
 export const DIVIDER_COLORS = {
   PRIMARY: '#303030',
   SECONDARY: '#575758',
-};
+} as const;
 
 export const FONT_FAMILY = {
   HELVETICA_ROUNDED: 'HelveticaRounded',
   GT_WALSHEIM_PRO_REGULAR: 'GTWalsheimProRegular',
   GT_WALSHEIM_PRO_BOLD: 'GTWalsheimProBold',
-};
+} as const;
 
 export const FONT_SIZE = {
-  H1: 30,
-  H2: 24,
-  H3: 20,
-  H4: 18,
-  H5: 16,
-};
+  H1: 24,
+  H2: 20,
+  H3: 18,
+  H4: 16,
+  H5: 14,
+} as const;
+
+export const FONT_WEIGHT = {
+  BOLD: '700',
+  SEMI_BOLD: '600',
+} as const;

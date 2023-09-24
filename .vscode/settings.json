@@ -1,0 +1,18 @@
+{
+    "rust-analyzer.linkedProjects": [
+        ".\\server\\Cargo.toml"
+    ],
+    "eslint.workingDirectories": [
+        {"mode": "auto"}
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+      },
+    "eslint.validate": [
+        "javascript",
+        "typescript"
+    ],
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "prettier.configPath": "./client/.prettierrc.js"
+}
