@@ -62,4 +62,5 @@ export const FONT_SIZE = {
 export const FONT_WEIGHT = {
   BOLD: '700',
   SEMI_BOLD: '600',
+  LIGHT: '400',
 } as const;

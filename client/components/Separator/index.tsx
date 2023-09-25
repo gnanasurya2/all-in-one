@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, ViewProps} from 'react-native';
 import {SURFACE_COLORS} from '../../constants/styles';
 
-export const Separator = ({style}: ViewProps) => {
+const Separator = ({style}: ViewProps) => {
   return <View style={[stlyes.separator, style]} />;
 };
 
@@ -13,3 +13,5 @@ const stlyes = StyleSheet.create({
     borderBottomWidth: 1,
   },
 });
+
+export default Separator;

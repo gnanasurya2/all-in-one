@@ -4,10 +4,10 @@ import {FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS} from '../constants/
 import Text from '../components/Text';
 //@ts-ignore
 import Search from '../assets/images/Search.svg';
+import {RootStackParamList} from '../Navigation/MovieApp/MovieAppNavigator';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-//TODO: Add typing for navigation.
-//@ts-ignore
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({navigation}: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>

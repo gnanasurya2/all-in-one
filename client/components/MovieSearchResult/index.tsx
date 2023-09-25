@@ -1,27 +1,21 @@
 import React from 'react';
 import {StyleSheet, View, Pressable} from 'react-native';
 import {SerchMovieResult} from '../../api/movies';
-import {FONT_SIZE, SURFACE_COLORS, TEXT_COLORS, BORDERS_COLORS, FONT_WEIGHT} from '../../constants/styles';
+import {FONT_SIZE, SURFACE_COLORS, TEXT_COLORS, FONT_WEIGHT} from '../../constants/styles';
 import Text from '../Text';
-import FastImage from 'react-native-fast-image';
+import PosterImage from '../PosterImage';
 
 interface MovieSearchResultProps extends SerchMovieResult {
-  onPressHandler: (id: string) => void;
+  onPressHandler: (id: string, Type: string) => void;
 }
-export const MovieSearchResult = ({Title, Poster, Year, onPressHandler, imdbID}: MovieSearchResultProps) => {
+
+export const MovieSearchResult = ({Title, Poster, Year, onPressHandler, imdbID, Type}: MovieSearchResultProps) => {
   return (
     <Pressable
       style={styles.wrapper}
       android_ripple={{color: SURFACE_COLORS.HIGHLIGHT, foreground: true}}
-      onPress={() => onPressHandler(imdbID)}>
-      <FastImage
-        style={styles.poster}
-        source={{
-          uri: Poster,
-          priority: FastImage.priority.high,
-        }}
-        resizeMode={FastImage.resizeMode.stretch}
-      />
+      onPress={() => onPressHandler(imdbID, Type)}>
+      <PosterImage url={Poster} width={100} height={148} />
       <View style={styles.textWrapper}>
         <Text style={styles.title}>
           {Title}
@@ -40,12 +34,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  poster: {
-    width: 100,
-    height: 148,
-    borderWidth: 1,
-    borderColor: BORDERS_COLORS.PRIMARY,
   },
   textWrapper: {
     flex: 1,
