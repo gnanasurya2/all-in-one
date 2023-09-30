@@ -2,7 +2,7 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 # Getting Started
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
 ## Step 1: Start the Metro Server
 
@@ -42,4 +42,18 @@ adb -s <device-name> reverse tcp:8081 tcp:8081
 # for port-forwarding the BE server
 
  adb -s <device-name> reverse tcp:1540 tcp:1540
+```
+
+# add this in node_modules/react-native-vector-icons/Font.gradle
+
+```java
+    android.applicationVariants.all { def variant ->
+        def targetName = variant.name.capitalize()
+        def lintVitalAnalyzeTask = tasks.findByName("lintVitalAnalyze${targetName}")  // here
+            if (lintVitalAnalyzeTask) {  // here
+                lintVitalAnalyzeTask.dependsOn(fontCopyTask) //here
+            } // here
+        def generateAssetsTask = tasks.findByName("generate${targetName}Assets")
+        generateAssetsTask.dependsOn(fontCopyTask)
+    }
 ```

@@ -64,3 +64,16 @@ export const FONT_WEIGHT = {
   SEMI_BOLD: '600',
   LIGHT: '400',
 } as const;
+
+export const GRADIENT_COLORS = [
+  '#0044CC', // Deep Blue
+  '#FF3366', // Crimson
+  '#00CC99', // Teal
+  '#9933FF', // Purple
+  '#FF9900', // Orange
+  '#33CCCC', // Turquoise
+  '#FF6699', // Pink
+  '#66CC33', // Lime Green
+  '#CC66FF', // Lavender
+  '#FFCC00',  // Yellow
+];

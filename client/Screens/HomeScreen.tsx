@@ -12,6 +12,7 @@ const HomeScreen = ({navigation}: NativeStackScreenProps<RootStackParamList, 'Ho
     <View style={styles.wrapper}>
       <View style={styles.header}>
         <Pressable
+          hitSlop={10}
           onPress={() => {
             navigation.navigate('Search');
           }}>

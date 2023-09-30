@@ -13,7 +13,7 @@ export const MovieSearchResult = ({Title, Poster, Year, onPressHandler, imdbID, 
   return (
     <Pressable
       style={styles.wrapper}
-      android_ripple={{color: SURFACE_COLORS.HIGHLIGHT, foreground: true}}
+      // android_ripple={{color: SURFACE_COLORS.HIGHLIGHT, foreground: true}}
       onPress={() => onPressHandler(imdbID, Type)}>
       <PosterImage url={Poster} width={100} height={148} />
       <View style={styles.textWrapper}>

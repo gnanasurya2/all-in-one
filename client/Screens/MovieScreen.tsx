@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View, Pressable, StyleSheet, ScrollView} from 'react-native';
-import {FONT_FAMILY, FONT_SIZE, FONT_WEIGHT, SURFACE_COLORS, TEXT_COLORS} from '../constants/styles';
+import {FONT_FAMILY, FONT_SIZE, FONT_WEIGHT, GRADIENT_COLORS, SURFACE_COLORS, TEXT_COLORS} from '../constants/styles';
 import Text from '../components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../Navigation/MovieApp/MovieAppNavigator';
@@ -9,6 +9,8 @@ import PosterImage from '../components/PosterImage';
 import LinearGradient from 'react-native-linear-gradient';
 //@ts-ignore
 import ChevronLeft from '../assets/images/ChevronLeft.svg';
+import StarRating from '../components/StarRating';
+import ShowMore from '../components/ShowMoreComponent';
 const MovieScreen = ({
   navigation,
   route: {
@@ -16,6 +18,12 @@ const MovieScreen = ({
   },
 }: NativeStackScreenProps<RootStackParamList, 'Movie'>) => {
   const {data} = useGetMovies({id: movieId, type});
+  const gradientColor = useMemo(() => {
+    const hash = movieId.split('').reduce((prev, curr) => prev + curr.charCodeAt(0), 0);
+
+    return GRADIENT_COLORS[hash % GRADIENT_COLORS.length];
+  }, [movieId]);
+
   return (
     <>
       <Pressable
@@ -26,10 +34,7 @@ const MovieScreen = ({
         <ChevronLeft style={styles.icon} />
       </Pressable>
       <ScrollView>
-        <LinearGradient
-          colors={[`${SURFACE_COLORS.INFORMATION}FF`, `${SURFACE_COLORS.INFORMATION}00`]}
-          style={styles.gradient}
-        />
+        <LinearGradient colors={[`${gradientColor}FF`, `${gradientColor}00`]} style={styles.gradient} />
         <View style={styles.wrapper}>
           {data ? (
             <>
@@ -46,8 +51,11 @@ const MovieScreen = ({
                 </View>
                 <PosterImage url={data.Poster} width={100} height={148} />
               </View>
-              <Text style={styles.plotText}>{data.Plot}</Text>
+              <ShowMore textLimit={250} style={styles.plotText}>
+                {data.Plot}
+              </ShowMore>
               <Text style={styles.ratingText}>Rating {data.imdbRating}</Text>
+              <StarRating />
             </>
           ) : (
             <Text>loading...</Text>

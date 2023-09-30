@@ -48,6 +48,13 @@ pub struct OmdbSearchResponse {
 }
 
 #[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct OmdbSearchErrorResponse {
+    Error: String,
+    Response: String,
+}
+
+#[allow(non_snake_case)]
 #[derive(Serialize, Deserialize)]
 pub struct SearchMoviesReturnResponse {
     Search: Vec<SearchResult>,
@@ -60,7 +67,7 @@ pub struct SearchMoviesReturnResponse {
 pub async fn search_movies(
     State(client): State<Client>,
     Query(query): Query<QueryParams>,
-) -> Result<Json<SearchMoviesReturnResponse>, StatusCode> {
+) -> Result<Json<SearchMoviesReturnResponse>, (StatusCode, Json<OmdbSearchErrorResponse>)> {
     let api_key = env::var("OMDB_API_KEY").unwrap();
     let mut request_url = format!(
         "https://www.omdbapi.com/?apikey={}&s={}&page={}",
@@ -76,30 +83,47 @@ pub async fn search_movies(
     }
 
     println!("{}", request_url);
-    let response = client
-        .get(request_url)
-        .send()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let response = client.get(request_url).send().await.map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(OmdbSearchErrorResponse {
+                Error: "Internal server error".to_string(),
+                Response: "Error".to_string(),
+            }),
+        )
+    })?;
 
-    let body = response
-        .text()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let body = response.text().await.map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(OmdbSearchErrorResponse {
+                Error: "Internal server error".to_string(),
+                Response: "Error".to_string(),
+            }),
+        )
+    })?;
 
-    let response: OmdbSearchResponse = serde_json::from_str(body.as_str()).unwrap();
+    match serde_json::from_str::<OmdbSearchResponse>(body.as_str()) {
+        Ok(response) => {
+            let mut has_more_data = false;
+            if (response.totalResults.parse::<isize>().unwrap() / 10) + 1 > (query.page as isize) {
+                has_more_data = true;
+            }
 
-    let mut has_more_data = false;
-    if (response.totalResults.parse::<isize>().unwrap() / 10) + 1 > (query.page as isize) {
-        has_more_data = true;
+            let final_response = SearchMoviesReturnResponse {
+                Search: response.Search,
+                Response: response.Response,
+                totalResults: response.totalResults,
+                page: query.page,
+                hasMoreData: has_more_data,
+            };
+            Ok(Json(final_response))
+        }
+        Err(err) => {
+            let error_response: OmdbSearchErrorResponse =
+                serde_json::from_str(body.as_str()).unwrap();
+            println!("{:?} {:?}", err, error_response);
+            Err((StatusCode::BAD_REQUEST, Json(error_response)))
+        }
     }
-
-    let final_response = SearchMoviesReturnResponse {
-        Search: response.Search,
-        Response: response.Response,
-        totalResults: response.totalResults,
-        page: query.page,
-        hasMoreData: has_more_data,
-    };
-    Ok(Json(final_response))
 }

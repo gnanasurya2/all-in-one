@@ -1,7 +1,9 @@
 module.exports = {
   project: {
     ios: {},
-    android: {},
+    android: {
+       unstable_reactLegacyComponentNames: [ 'FastImageView' ],
+    },
   },
   assets: ['./assets/fonts'],
 };

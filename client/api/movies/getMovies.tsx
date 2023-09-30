@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 import axios from 'axios';
 
 export interface getMovieResponse {
-  Actors: string;
+  Actors: Array<string>;
   Awards: string;
   BoxOffice: string;
   Country: string;
@@ -19,6 +19,7 @@ export interface getMovieResponse {
   Title: string;
   Runtime: string;
   Year: string;
+  Genre: Array<string>;
 }
 
 const getMovie = async (id: string, type: string) => {

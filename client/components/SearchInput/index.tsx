@@ -1,14 +1,5 @@
 import React, {forwardRef, ForwardedRef} from 'react';
-import {
-  ImageStyle,
-  StyleProp,
-  StyleSheet,
-  TextInput,
-  TextInputProps,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {ImageStyle, StyleProp, StyleSheet, TextInput, TextInputProps, TextStyle, View, ViewStyle} from 'react-native';
 import {FONT_FAMILY, FONT_SIZE, SURFACE_COLORS} from '../../constants/styles';
 //@ts-ignore
 import Search from '../../assets/images/Search.svg';
@@ -19,10 +10,7 @@ interface SearchInputProps extends Omit<TextInputProps, 'style' | 'ref'> {
   inputStyle?: StyleProp<TextStyle>;
 }
 const SearchInput = forwardRef(
-  (
-    {wrapperStyle, iconStyle, inputStyle, ...props}: SearchInputProps,
-    ref: ForwardedRef<TextInput>,
-  ) => {
+  ({wrapperStyle, iconStyle, inputStyle, ...props}: SearchInputProps, ref: ForwardedRef<TextInput>) => {
     return (
       <View style={[styles.searchWrapper, wrapperStyle]}>
         <Search style={[styles.tinyLogo, iconStyle]} width={20} height={20} />
@@ -56,6 +44,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: FONT_FAMILY.GT_WALSHEIM_PRO_REGULAR,
+    color: 'white',
     fontSize: FONT_SIZE.H5,
     fontWeight: '400',
   },
