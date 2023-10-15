@@ -1,23 +1,30 @@
-import React, {useMemo} from 'react';
-import {View, Pressable, StyleSheet, ScrollView} from 'react-native';
-import {FONT_FAMILY, FONT_SIZE, FONT_WEIGHT, GRADIENT_COLORS, SURFACE_COLORS, TEXT_COLORS} from '../constants/styles';
+import React, { useMemo } from 'react';
+import { View, Pressable, StyleSheet, ScrollView } from 'react-native';
+import {
+  FONT_FAMILY,
+  FONT_SIZE,
+  FONT_WEIGHT,
+  GRADIENT_COLORS,
+  SURFACE_COLORS,
+  TEXT_COLORS,
+} from '../constants/styles';
 import Text from '../components/Text';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../Navigation/MovieApp/MovieAppNavigator';
-import {useGetMovies} from '../api/movies/getMovies';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../Navigation/MovieApp/MovieAppNavigator';
+import { useGetMovies } from '../api/movies/getMovies';
 import PosterImage from '../components/PosterImage';
-import {LinearGradient} from 'expo-linear-gradient';
-import {FontAwesome5} from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome5 } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import ShowMore from '../components/ShowMoreComponent';
 
 const MovieScreen = ({
   navigation,
   route: {
-    params: {movieId, type},
+    params: { movieId, type },
   },
 }: NativeStackScreenProps<RootStackParamList, 'Movie'>) => {
-  const {data} = useGetMovies({id: movieId, type});
+  const { data } = useGetMovies({ id: movieId, type });
   const gradientColor = useMemo(() => {
     const hash = movieId.split('').reduce((prev, curr) => prev + curr.charCodeAt(0), 0);
 
@@ -30,11 +37,15 @@ const MovieScreen = ({
         style={styles.iconWrapper}
         onPress={() => {
           navigation.goBack();
-        }}>
+        }}
+      >
         <FontAwesome5 name="chevron-left" size={24} color="white" />
       </Pressable>
       <ScrollView>
-        <LinearGradient colors={[`${gradientColor}FF`, `${gradientColor}00`]} style={styles.gradient} />
+        <LinearGradient
+          colors={[`${gradientColor}FF`, `${gradientColor}00`]}
+          style={styles.gradient}
+        />
         <View style={styles.wrapper}>
           {data ? (
             <>
@@ -54,6 +65,7 @@ const MovieScreen = ({
               <ShowMore textLimit={250} style={styles.plotText}>
                 {data.Plot}
               </ShowMore>
+              <Text>{data.Actors}</Text>
               <Text style={styles.ratingText}>Rating {data.imdbRating}</Text>
               <StarRating />
             </>

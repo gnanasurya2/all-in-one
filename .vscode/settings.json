@@ -14,5 +14,5 @@
     ],
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
-    "prettier.configPath": "./client/.prettierrc.js"
+    "prettier.configPath": "./client-expo/.prettierrc.json"
 }

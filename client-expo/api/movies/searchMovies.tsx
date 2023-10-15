@@ -1,4 +1,4 @@
-import {useInfiniteQuery} from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 interface searchMoviesParams {
@@ -22,7 +22,7 @@ export interface searchMoviesResponse {
   page: number;
 }
 
-const searchMovies = async ({title, page}: searchMoviesParams) => {
+const searchMovies = async ({ title, page }: searchMoviesParams) => {
   if (!title) {
     return {
       Search: [],
@@ -32,20 +32,25 @@ const searchMovies = async ({title, page}: searchMoviesParams) => {
     };
   }
   console.log('axios', axios.defaults.baseURL);
-  const response = await axios.get<searchMoviesResponse>('/movies/search', {
-    params: {
-      title,
-      page,
-    },
-  });
-  return response.data;
+  try {
+    const response = await axios.get<searchMoviesResponse>('/movies/search', {
+      params: {
+        title,
+        page,
+      },
+    });
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 };
 
-export const useSearchMovies = ({title}: {title: string}) => {
+export const useSearchMovies = ({ title }: { title: string }) => {
   const query = useInfiniteQuery({
     queryKey: ['searchMovies', title],
-    queryFn: ({pageParam = 1}) => searchMovies({title, page: pageParam}),
-    getNextPageParam: lastPage => {
+    queryFn: ({ pageParam = 1 }) => searchMovies({ title, page: pageParam }),
+    getNextPageParam: (lastPage) => {
       if (lastPage.hasMoreData) {
         return lastPage.page + 1;
       }

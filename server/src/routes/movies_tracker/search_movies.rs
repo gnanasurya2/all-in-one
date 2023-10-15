@@ -1,10 +1,10 @@
-use axum::{
-    extract::{Query, State},
-    Json,
-};
-use reqwest::{Client, StatusCode};
+use axum::{extract::Query, http::StatusCode, Extension, Json};
+use reqwest::Client;
+use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use std::env;
+
+use crate::database;
 
 fn default_year() -> i32 {
     0
@@ -65,7 +65,7 @@ pub struct SearchMoviesReturnResponse {
 }
 
 pub async fn search_movies(
-    State(client): State<Client>,
+    Extension(client): Extension<Client>,
     Query(query): Query<QueryParams>,
 ) -> Result<Json<SearchMoviesReturnResponse>, (StatusCode, Json<OmdbSearchErrorResponse>)> {
     let api_key = env::var("OMDB_API_KEY").unwrap();

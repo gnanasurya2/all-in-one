@@ -1,10 +1,14 @@
 extern crate dotenv;
 
-use server::run;
 use dotenv::dotenv;
+use dotenvy_macro::dotenv;
+use server::run;
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    run().await
+
+    let database_url = dotenv!("DATABASE_URL");
+
+    run(database_url).await
 }

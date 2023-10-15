@@ -1,8 +1,5 @@
-use axum::{
-    extract::{Query, State},
-    Json,
-};
-use reqwest::{Client, StatusCode};
+use axum::{extract::Query, http::StatusCode, Extension, Json};
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::env;
 
@@ -67,7 +64,7 @@ pub struct GetMoviesApiResponse {
     Year: String,
 }
 pub async fn get_movies(
-    State(client): State<Client>,
+    Extension(client): Extension<Client>,
     Query(query): Query<QueryParams>,
 ) -> Result<Json<GetMoviesApiResponse>, StatusCode> {
     let api_key = env::var("OMDB_API_KEY").unwrap();

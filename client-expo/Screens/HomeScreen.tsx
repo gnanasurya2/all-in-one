@@ -1,12 +1,12 @@
 import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
-import {FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS} from '../constants/styles';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../constants/styles';
 import Text from '../components/Text';
-import {RootStackParamList} from '../Navigation/MovieApp/MovieAppNavigator';
-import {FontAwesome5} from '@expo/vector-icons';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { RootStackParamList } from '../Navigation/MovieApp/MovieAppNavigator';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const HomeScreen = ({navigation}: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
@@ -14,7 +14,8 @@ const HomeScreen = ({navigation}: NativeStackScreenProps<RootStackParamList, 'Ho
           hitSlop={10}
           onPress={() => {
             navigation.navigate('Search');
-          }}>
+          }}
+        >
           <FontAwesome5 name="search" size={18} color="white" />
         </Pressable>
       </View>
