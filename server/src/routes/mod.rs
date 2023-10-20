@@ -34,7 +34,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router {
         .route("/movies/get", get(get_movies))
         .route("/movies/search", get(search_movies))
         .route("/user/logout", post(logout))
-        // .route_layer(middleware::from_fn(guard))
+        .route_layer(middleware::from_fn(guard))
         .route("/hello", get(hello_world))
         .route("/user/create", post(create_users))
         .route("/user/login", post(login))

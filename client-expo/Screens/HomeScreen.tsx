@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../constants/styles';
 import Text from '../components/Text';
 import { RootStackParamList } from '../Navigation/MovieApp/MovieAppNavigator';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import CustomButton from '../components/Button';
+import { AuthContext } from '../context/AuthContext';
 
 const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+  const { authContext } = useContext(AuthContext);
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
@@ -19,8 +23,12 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
           <FontAwesome5 name="search" size={18} color="white" />
         </Pressable>
       </View>
-      <Text style={styles.text}>Finally it's working on a clean pc</Text>
-      <Text style={styles.text2}>Home Screen is there</Text>
+      <CustomButton
+        title="Logout"
+        onPress={() => {
+          authContext.signOut();
+        }}
+      />
     </View>
   );
 };
