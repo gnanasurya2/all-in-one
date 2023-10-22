@@ -1,14 +1,15 @@
-import React, {useMemo} from 'react';
-import {Image, StyleSheet} from 'react-native';
+import React, { useMemo } from 'react';
+import { Image, StyleSheet, ImageStyle } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {BORDERS_COLORS} from '../../constants/styles';
+import { BORDERS_COLORS } from '../../constants/styles';
 
 type PosterProps = {
   url: string;
   width: number;
   height: number;
+  style?: ImageStyle;
 };
-const PosterImage = ({url, width, height}: PosterProps) => {
+const PosterImage = ({ url, width, height, style }: PosterProps) => {
   const styles = useMemo(() => {
     return StyleSheet.create({
       poster: {
@@ -21,7 +22,7 @@ const PosterImage = ({url, width, height}: PosterProps) => {
   }, [width, height]);
   return (
     <Image
-      style={styles.poster}
+      style={[styles.poster, style]}
       source={{
         uri: url,
       }}

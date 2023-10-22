@@ -17,10 +17,9 @@ pub async fn guard<T>(
     mut request: Request<T>,
     next: Next<T>,
 ) -> Result<Response, StatusCode> {
+    println!("request {:?}", request.uri());
     let token = token.token().to_owned();
-
     is_valid(&token)?;
-
     let database = request
         .extensions()
         .get::<DatabaseConnection>()

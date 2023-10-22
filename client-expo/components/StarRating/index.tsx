@@ -1,7 +1,7 @@
-import React, {useState, useMemo} from 'react';
-import {StyleSheet, Pressable, useWindowDimensions} from 'react-native';
-import {GestureDetector, Gesture} from 'react-native-gesture-handler';
-import {FontAwesome} from '@expo/vector-icons';
+import React, { useState, useMemo } from 'react';
+import { StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { FontAwesome } from '@expo/vector-icons';
 
 function customRound(number: number) {
   const floorNumber = Math.floor(number);
@@ -14,31 +14,37 @@ function customRound(number: number) {
   }
 }
 
-const StarRating = ({maxRating = 5, size = 40}) => {
-  const [ratingValue, setRatingValue] = useState(0);
-  const numberOfStart = useMemo(() => new Array(maxRating).fill(1), [maxRating]);
+interface IStarRatingProps {
+  maxRating?: number;
+  size?: number;
+  onChange: (value: number) => void;
+  value: number;
+}
 
-  const {width} = useWindowDimensions();
+const StarRating = ({ maxRating = 5, size = 40, onChange, value }: IStarRatingProps) => {
+  const numberOfStars = useMemo(() => new Array(maxRating).fill(1), [maxRating]);
+
+  const { width } = useWindowDimensions();
   const gesture = Gesture.Pan()
     .runOnJS(true)
-    .onUpdate(event => {
+    .onUpdate((event) => {
       //TODO: Clamp the starting and ending empty while calculating the rating.
-      setRatingValue(customRound((event.absoluteX / width) * 5));
+      onChange(customRound((event.absoluteX / width) * 5));
     });
   return (
     <GestureDetector gesture={gesture}>
       <Pressable style={styles.wrapper}>
-        {numberOfStart.map((_, index) => (
+        {numberOfStars.map((_, index) => (
           <FontAwesome
             key={index}
             size={size}
             color={'yellow'}
-            onPress={event => {
-              setRatingValue(index + (event.nativeEvent.locationX < size * 0.5 ? 0.5 : 1));
+            onPress={(event) => {
+              onChange(index + (event.nativeEvent.locationX < size * 0.5 ? 0.5 : 1));
             }}
             name={
-              index < ratingValue
-                ? Math.floor(ratingValue) === index && ratingValue !== index
+              index < value
+                ? Math.floor(value) === index && value !== index
                   ? 'star-half-full'
                   : 'star'
                 : 'star-o'

@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import MainNavigator from './Navigation/MainNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import axios from 'axios';
@@ -20,6 +20,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuthentication } from './hooks/useAuthentication';
 import { AuthContext } from './context/AuthContext';
 import { getItemAsync, setItemAsync, deleteItemAsync } from 'expo-secure-store';
+import addTokenInterceptor from './utils/interceptors';
 
 //TODO: make env variables work.
 axios.defaults.baseURL = 'http://localhost:1540';
@@ -40,9 +41,14 @@ function App(): JSX.Element {
     }
   }, [fontsLoaded]);
 
-  const getToken = () => {
-    return state.token;
-  };
+  useEffect(() => {
+    if (state.token) {
+      addTokenInterceptor(state.token);
+    }
+    return () => {
+      axios.interceptors.request.clear();
+    };
+  }, [state.token]);
 
   useEffect(() => {
     const bootstrapAsync = async () => {
@@ -57,16 +63,11 @@ function App(): JSX.Element {
       }
     };
     bootstrapAsync();
-    axios.interceptors.request.use((config) => {
-      const token = getToken();
-      config.headers.Authorization = `Bearer ${token}`;
-      return config;
-    });
 
     axios.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const { status } = error.response;
+        const { status } = error.response || {};
         if (status === 401) {
           await deleteItemAsync('userToken');
           dispatch({ type: 'SIGN_OUT' });
@@ -101,6 +102,7 @@ function App(): JSX.Element {
           username,
           password,
         });
+
         await setItemAsync('userDetails', JSON.stringify({ username, password }));
         await setItemAsync('userToken', response.data.token);
 

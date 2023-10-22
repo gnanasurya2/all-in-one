@@ -1,7 +1,13 @@
 use axum::{extract::Query, http::StatusCode, Extension, Json};
 use reqwest::Client;
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use std::env;
+
+use crate::database::movies::{self, Entity as Movies};
+use crate::database::users::Model;
+use crate::utils::app_error::AppError;
+use crate::utils::type_conversion::i8_to_bool;
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize)]
@@ -62,11 +68,21 @@ pub struct GetMoviesApiResponse {
     Title: String,
     Runtime: String,
     Year: String,
+    liked: Option<bool>,
+    watched: Option<bool>,
+    watch_list: Option<bool>,
+    rating: Option<f32>,
+    watched_date: Option<String>,
+    tracked_id: Option<i32>,
+    isLogged: bool,
 }
+
 pub async fn get_movies(
     Extension(client): Extension<Client>,
+    Extension(database): Extension<DatabaseConnection>,
+    Extension(user): Extension<Model>,
     Query(query): Query<QueryParams>,
-) -> Result<Json<GetMoviesApiResponse>, StatusCode> {
+) -> Result<Json<GetMoviesApiResponse>, AppError> {
     let api_key = env::var("OMDB_API_KEY").unwrap();
 
     let request_url = format!(
@@ -76,16 +92,17 @@ pub async fn get_movies(
 
     println!("{}", request_url);
 
-    let response = client
-        .get(request_url)
-        .send()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let response =
+        client.get(request_url).send().await.map_err(|_| {
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "External request failed")
+        })?;
 
-    let body = response
-        .text()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let body = response.text().await.map_err(|_| {
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Error while parsing the response",
+        )
+    })?;
 
     match serde_json::from_str::<OmdbResponse>(body.as_str()) {
         Ok(response) => {
@@ -100,7 +117,19 @@ pub async fn get_movies(
                 .map(|s| s.trim().to_string())
                 .collect();
 
-            let final_response = GetMoviesApiResponse {
+            let watched_data = Movies::find()
+                .filter(movies::Column::UserId.eq(user.id))
+                .filter(movies::Column::ImdbId.eq(query.id))
+                .one(&database)
+                .await
+                .map_err(|_| {
+                    AppError::new(
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        "Error while retriving data",
+                    )
+                })?;
+
+            let mut final_response = GetMoviesApiResponse {
                 Actors: formatter_actors,
                 Awards: response.Awards,
                 BoxOffice: response.BoxOffice,
@@ -119,9 +148,33 @@ pub async fn get_movies(
                 Title: response.Title,
                 Runtime: response.Runtime,
                 Year: response.Year,
+                liked: None,
+                watched: None,
+                watch_list: None,
+                rating: None,
+                watched_date: None,
+                isLogged: false,
+                tracked_id: None,
             };
+
+            if let Some(watched_data) = watched_data {
+                final_response.liked = Some(i8_to_bool(watched_data.liked));
+                final_response.watched = Some(i8_to_bool(watched_data.watched));
+                final_response.watch_list = Some(i8_to_bool(watched_data.watch_list));
+                let watched_date = match watched_data.watched_date {
+                    Some(date) => date.to_string(),
+                    None => "".to_owned(),
+                };
+                final_response.watched_date = Some(watched_date);
+                final_response.rating = Some(watched_data.rating);
+                final_response.isLogged = true;
+                final_response.tracked_id = Some(watched_data.id);
+            }
             Ok(Json(final_response))
         }
-        Err(_) => Err(StatusCode::EXPECTATION_FAILED),
+        Err(_) => Err(AppError::new(
+            StatusCode::EXPECTATION_FAILED,
+            "Error while parsing the json",
+        )),
     }
 }

@@ -2,6 +2,9 @@ pub use sea_orm_migration::prelude::*;
 
 mod m20220101_000001_create_table;
 mod m20231015_082108_add_token_to_users;
+mod m20231021_103237_create_movie_table;
+mod m20231021_190712_update_movie_table;
+mod m20231022_120942_add_movie_title_to_movie_table;
 
 pub struct Migrator;
 
@@ -11,6 +14,9 @@ impl MigratorTrait for Migrator {
         vec![
             Box::new(m20220101_000001_create_table::Migration),
             Box::new(m20231015_082108_add_token_to_users::Migration),
+            Box::new(m20231021_103237_create_movie_table::Migration),
+            Box::new(m20231021_190712_update_movie_table::Migration),
+            Box::new(m20231022_120942_add_movie_title_to_movie_table::Migration),
         ]
     }
 }

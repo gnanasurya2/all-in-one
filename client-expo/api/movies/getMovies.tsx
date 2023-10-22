@@ -1,4 +1,4 @@
-import {useQuery} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 export interface getMovieResponse {
@@ -20,6 +20,13 @@ export interface getMovieResponse {
   Runtime: string;
   Year: string;
   Genre: Array<string>;
+  liked: boolean | null;
+  watched: boolean | null;
+  watch_list: boolean | null;
+  rating: number | null;
+  watched_date: string | null;
+  isLogged: boolean;
+  tracked_id: number;
 }
 
 const getMovie = async (id: string, type: string) => {
@@ -32,7 +39,7 @@ const getMovie = async (id: string, type: string) => {
   return response.data;
 };
 
-export const useGetMovies = ({id, type}: {id: string; type: string}) => {
+export const useGetMovies = ({ id, type }: { id: string; type: string }) => {
   const query = useQuery({
     queryKey: ['getMovie', id, type],
     queryFn: () => getMovie(id, type),

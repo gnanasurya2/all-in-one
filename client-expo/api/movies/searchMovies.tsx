@@ -31,7 +31,7 @@ const searchMovies = async ({ title, page }: searchMoviesParams) => {
       page: 0,
     };
   }
-  console.log('axios', axios.defaults.baseURL);
+
   try {
     const response = await axios.get<searchMoviesResponse>('/movies/search', {
       params: {

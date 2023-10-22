@@ -1,10 +1,7 @@
 use axum::{extract::Query, http::StatusCode, Extension, Json};
 use reqwest::Client;
-use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use std::env;
-
-use crate::database;
 
 fn default_year() -> i32 {
     0
