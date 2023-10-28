@@ -21,7 +21,7 @@ import { useAuthentication } from './hooks/useAuthentication';
 import { AuthContext } from './context/AuthContext';
 import { getItemAsync, setItemAsync, deleteItemAsync } from 'expo-secure-store';
 import addTokenInterceptor from './utils/interceptors';
-
+import { hello } from './modules/read-sms';
 //TODO: make env variables work.
 axios.defaults.baseURL = 'http://localhost:1540';
 
@@ -51,6 +51,7 @@ function App(): JSX.Element {
   }, [state.token]);
 
   useEffect(() => {
+    console.log('calling native module function', hello());
     const bootstrapAsync = async () => {
       const token = await getItemAsync('userToken');
       if (token) {

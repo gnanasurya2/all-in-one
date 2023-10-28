@@ -23,7 +23,7 @@ class ReadSmsModule : Module() {
 
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("hello") {
-      "Hello world! 👋"
+      "Hello world! from native 👋"
     }
 
     // Defines a JavaScript function that always returns a Promise and whose native code

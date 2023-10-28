@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, ImageStyle } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { BORDERS_COLORS } from '../../constants/styles';
 
 type PosterProps = {
