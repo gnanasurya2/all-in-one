@@ -5,4 +5,8 @@
 5    <uses-sdk android:minSdkVersion="21" />
 5-->D:\development\all-in-one\client-expo\modules\read-sms\android\src\main\AndroidManifest.xml
 6
-7</manifest>
+7    <uses-permission android:name="android.permission.READ_SMS" />
+7-->D:\development\all-in-one\client-expo\modules\read-sms\android\src\main\AndroidManifest.xml:2:5-66
+7-->D:\development\all-in-one\client-expo\modules\read-sms\android\src\main\AndroidManifest.xml:2:22-64
+8
+9</manifest>

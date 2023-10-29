@@ -10,6 +10,7 @@ import { useGetTrackedMovies } from '../api/movies/getTrackedMovies';
 import TrackedMovie from '../components/TrackedMovie';
 import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus';
 import CustomButton from '../components/Button';
+import { readLastNSMS } from '../modules/read-sms';
 
 export type MovieData =
   | {
@@ -29,6 +30,18 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, '
   const [headerIndices, setHeaderIndices] = useState<Array<number>>([0]);
 
   const { data, fetchNextPage, refetch } = useGetTrackedMovies({ page_size: 15 });
+
+  useEffect(() => {
+    console.log(
+      'read last n messages',
+      JSON.stringify(
+        readLastNSMS(100).filter((ele) => /^[A-Z]{2}-PAYTMB$/.test(ele.address)),
+        undefined,
+        2
+      )
+    );
+  }, []);
+
   useRefreshOnFocus(refetch);
   useEffect(() => {
     if (data?.pages) {

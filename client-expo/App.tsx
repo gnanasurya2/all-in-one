@@ -21,7 +21,7 @@ import { useAuthentication } from './hooks/useAuthentication';
 import { AuthContext } from './context/AuthContext';
 import { getItemAsync, setItemAsync, deleteItemAsync } from 'expo-secure-store';
 import addTokenInterceptor from './utils/interceptors';
-import { hello } from './modules/read-sms';
+import { hello, readLastSMS, requestSMSPermission } from './modules/read-sms';
 //TODO: make env variables work.
 axios.defaults.baseURL = 'http://localhost:1540';
 
@@ -38,6 +38,8 @@ function App(): JSX.Element {
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
+      requestSMSPermission();
+      console.log('last Message', readLastSMS());
     }
   }, [fontsLoaded]);
 
