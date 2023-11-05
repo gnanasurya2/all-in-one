@@ -1,16 +1,16 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from '../../Screens/HomeScreen';
-import SearchScreen from '../../Screens/SearchScreen';
-import MovieScreen from '../../Screens/MovieScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from '../../Screens/Movies/HomeScreen';
+import SearchScreen from '../../Screens/Movies/SearchScreen';
+import MovieScreen from '../../Screens/Movies/MovieScreen';
 
-export type RootStackParamList = {
+export type MovieNavigatorStackParamList = {
   Home: undefined;
   Search: undefined;
-  Movie: {movieId: string; type: string};
+  Movie: { movieId: string; type: string };
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<MovieNavigatorStackParamList>();
 
 const MovieAppNavigator = () => {
   return (
@@ -18,7 +18,8 @@ const MovieAppNavigator = () => {
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+    >
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Movie" component={MovieScreen} />

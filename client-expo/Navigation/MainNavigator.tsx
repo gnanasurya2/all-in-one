@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
-import MovieAppNavigator from './MovieApp/MovieAppNavigator';
 import { AuthContext } from '../context/AuthContext';
 import AuthenticationNavigator from './Authentication/AuthenticationNavigator';
+import RootNavigator from './RootNavigator';
 
 const MainNavigator = () => {
   const { state } = useContext(AuthContext);
-  return state.isLoggedIn ? <MovieAppNavigator /> : <AuthenticationNavigator />;
+  return state.isLoggedIn ? <RootNavigator /> : <AuthenticationNavigator />;
 };
 
 export default MainNavigator;

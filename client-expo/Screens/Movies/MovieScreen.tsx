@@ -8,21 +8,21 @@ import {
   GRADIENT_COLORS,
   SURFACE_COLORS,
   TEXT_COLORS,
-} from '../constants/styles';
-import Text from '../components/Text';
+} from '../../constants/styles';
+import Text from '../../components/Text';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../Navigation/MovieApp/MovieAppNavigator';
-import { getMovieResponse, useGetMovies } from '../api/movies/getMovies';
-import PosterImage from '../components/PosterImage';
+import { MovieNavigatorStackParamList } from '../../Navigation/MovieApp/MovieAppNavigator';
+import { getMovieResponse, useGetMovies } from '../../api/movies/getMovies';
+import PosterImage from '../../components/PosterImage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import StarRating from '../components/StarRating';
-import ShowMore from '../components/ShowMoreComponent';
-import CustomButton from '../components/Button';
+import StarRating from '../../components/StarRating';
+import ShowMore from '../../components/ShowMoreComponent';
+import CustomButton from '../../components/Button';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useAddTrackedMovie } from '../api/movies/addWatchedMovie';
+import { useAddTrackedMovie } from '../../api/movies/addWatchedMovie';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useUpdateTrackedMovie } from '../api/movies/updateWatchedMovie';
+import { useUpdateTrackedMovie } from '../../api/movies/updateWatchedMovie';
 import { useQueryClient } from '@tanstack/react-query';
 
 type datePickerMode = 'date' | 'time';
@@ -32,7 +32,7 @@ const MovieScreen = ({
   route: {
     params: { movieId, type },
   },
-}: NativeStackScreenProps<RootStackParamList, 'Movie'>) => {
+}: NativeStackScreenProps<MovieNavigatorStackParamList, 'Movie'>) => {
   const [watched, setWatched] = useState(false);
   const [liked, setLiked] = useState(false);
   const [watchList, setWatchList] = useState(false);

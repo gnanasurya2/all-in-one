@@ -1,145 +1,64 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../constants/styles';
-
-import { RootStackParamList } from '../Navigation/MovieApp/MovieAppNavigator';
-import { FontAwesome5 } from '@expo/vector-icons';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Text from '../components/Text';
+import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS } from '../constants/styles';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthContext } from '../context/AuthContext';
-import { useGetTrackedMovies } from '../api/movies/getTrackedMovies';
-import TrackedMovie from '../components/TrackedMovie';
-import { useRefreshOnFocus } from '../hooks/useRefreshOnFocus';
-import CustomButton from '../components/Button';
-import { readLastNSMS } from '../modules/read-sms';
+import { RootNavigatorParamList } from '../Navigation/RootNavigator';
 
-export type MovieData =
-  | {
-      header: false;
-      title: string;
-      year: number;
-      rating: number;
-      day: number;
-      id: string;
-      poster: string;
-      isLast: boolean;
-    }
-  | { header: true; title: string; id: string; isLast: boolean };
-const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
-  const { authContext } = useContext(AuthContext);
-  const [moviesData, setMoviesData] = useState<Array<MovieData>>([]);
-  const [headerIndices, setHeaderIndices] = useState<Array<number>>([0]);
-
-  const { data, fetchNextPage, refetch } = useGetTrackedMovies({ page_size: 15 });
-
-  useEffect(() => {
-    console.log(
-      'read last n messages',
-      JSON.stringify(
-        readLastNSMS(100).filter((ele) => /^[A-Z]{2}-PAYTMB$/.test(ele.address)),
-        undefined,
-        2
-      )
-    );
-  }, []);
-
-  useRefreshOnFocus(refetch);
-  useEffect(() => {
-    if (data?.pages) {
-      const headerIndices: Array<number> = [1],
-        result: Array<MovieData> = [];
-      let lastMonth = '';
-      data.pages
-        .flatMap((value) => value.response, [data])
-        .forEach((value, index) => {
-          const watchedDate = new Date(value.watched_date),
-            currentMonth = watchedDate.toLocaleDateString('en-IN', { month: 'long' }).toUpperCase();
-          if (lastMonth !== currentMonth) {
-            if (index) {
-              headerIndices.push(result.length + 1);
-              result[result.length - 1].isLast = true;
-            }
-            result.push({
-              header: true,
-              title: `${currentMonth} ${watchedDate.getFullYear()}`,
-              id: Math.random().toString(),
-              isLast: false,
-            });
-            lastMonth = currentMonth;
-          }
-          result.push({
-            header: false,
-            title: value.title,
-            year: value.year,
-            rating: value.rating,
-            id: value.imdb_id,
-            poster: value.poster,
-            day: watchedDate.getDate(),
-            isLast: false,
-          });
-        });
-      setHeaderIndices(headerIndices);
-      setMoviesData(result);
-    }
-  }, [data]);
+const HomeScreen = ({ navigation }: NativeStackScreenProps<RootNavigatorParamList, 'Home'>) => {
   return (
     <View style={styles.wrapper}>
-      <View style={styles.header}>
-        <Pressable
-          hitSlop={10}
-          onPress={() => {
-            navigation.navigate('Search');
-          }}
-        >
-          <FontAwesome5 name="search" size={18} color="white" />
-        </Pressable>
-      </View>
-      <CustomButton
-        title="Logout"
+      <Pressable
+        style={[styles.chipWrapper, { backgroundColor: '#FF6B6B' }]}
         onPress={() => {
-          authContext.signOut();
+          navigation.navigate('Movies', { screen: 'Home' });
         }}
-      />
-      <FlatList
-        data={moviesData}
-        stickyHeaderIndices={headerIndices}
-        ListHeaderComponent={() => null}
-        renderItem={({ item }) => (
-          <TrackedMovie
-            {...item}
-            onPressHandler={(id) => navigation.push('Movie', { movieId: id, type: 'movie' })}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        onEndReachedThreshold={0.5}
-        onEndReached={() => {
-          fetchNextPage();
+      >
+        <Text style={styles.content}>Movies</Text>
+      </Pressable>
+      <Pressable
+        style={[styles.chipWrapper, { backgroundColor: '#0b8a4b' }]}
+        onPress={() => {
+          navigation.navigate('ExpenseTracker', { screen: 'Home' });
         }}
-      />
+      >
+        <Text style={styles.content}>Expense tracker</Text>
+      </Pressable>
     </View>
   );
 };
 
+// #FF6B6B (Coral Red)
+// #FFC300 (Vivid Yellow)
+// #FF85A2 (Light Pink)
+// #0b8a4b (Spring Green)
+// #FFA500 (Orange)
+
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
     backgroundColor: SURFACE_COLORS.PAGE,
-  },
-  header: {
-    height: 50,
-    backgroundColor: SURFACE_COLORS.TERTIARY,
     justifyContent: 'center',
-    alignItems: 'flex-end',
-    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginVertical: 16,
   },
-  text: {
-    color: TEXT_COLORS.SUCCESS,
-    fontSize: FONT_SIZE.H1,
+  chipWrapper: {
+    backgroundColor: '#FFA500',
+    flexBasis: '42%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 8,
   },
-  text2: {
-    color: TEXT_COLORS.ERROR,
+  content: {
+    fontSize: FONT_SIZE.H2,
     fontFamily: FONT_FAMILY.HELVETICA_ROUNDED,
-    fontSize: FONT_SIZE.H1,
+    textAlign: 'center',
   },
 });
+
 export default HomeScreen;
