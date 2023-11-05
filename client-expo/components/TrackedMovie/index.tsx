@@ -37,15 +37,22 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
           <Text style={styles.dayText}>{props.day}</Text>
         </View>
         <PosterImage url={props.poster} width={34} height={50} />
-        <View style={[styles.titleView, props.isLast ? {} : styles.titleViewBorder]}>
-          <View style={styles.titleWrapper}>
-            <Text style={styles.movieTitleText}>{props.title}</Text>
-            <Text style={styles.yearText}>{props.year}</Text>
-          </View>
-          <View style={styles.starView}>
-            {rating.map((value) => (
-              <FontAwesome name={value} size={12} color={SURFACE_COLORS.SUCCESS} />
-            ))}
+        <View
+          style={[
+            { flex: 1, height: 60, justifyContent: 'center' },
+            props.isLast ? {} : styles.titleViewBorder,
+          ]}
+        >
+          <View style={[styles.titleView]}>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.movieTitleText}>{props.title}</Text>
+              <Text style={styles.yearText}>{props.year}</Text>
+            </View>
+            <View style={styles.starView}>
+              {rating.map((value) => (
+                <FontAwesome name={value} size={12} color={SURFACE_COLORS.SUCCESS} />
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -63,7 +70,7 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     paddingLeft: 16,
-    paddingVertical: 12,
+    paddingVertical: 4,
     flexDirection: 'row',
   },
   headerText: {
@@ -85,14 +92,16 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.BODY_L2,
   },
   titleView: {
-    marginLeft: 16,
-    flex: 1,
+    marginLeft: 8,
+    height: 50,
+    justifyContent: 'center',
   },
   titleViewBorder: {
+    marginLeft: 4,
     borderBottomWidth: 1,
     borderColor: BORDERS_COLORS.SECONDARY,
   },
-  starView: { flexDirection: 'row', marginTop: 6 },
+  starView: { flexDirection: 'row', marginTop: 2 },
   titleWrapper: { flexDirection: 'row' },
   movieTitleText: { fontWeight: 'bold' },
   yearText: { marginLeft: 4, color: TEXT_COLORS.BODY_L2 },

@@ -125,7 +125,7 @@ const MovieScreen = ({
               <ShowMore textLimit={250} style={styles.plotText}>
                 {data.Plot}
               </ShowMore>
-              <Text>{data.Actors}</Text>
+              <Text>{data.Actors.join(',  ')}</Text>
               <Text style={styles.ratingText}>Rating {data.imdbRating}</Text>
               <CustomButton
                 onPress={handlePresentModalPress}
@@ -183,23 +183,26 @@ const MovieScreen = ({
                       </View>
                       <StarRating onChange={(value) => setStarRating(value)} value={starRating} />
                       <View style={styles.dateTimeWrapper}>
-                        <Pressable onPress={() => showMode('date')} style={styles.datePressable}>
-                          <Text style={styles.dateText}>
-                            {watchDate.toLocaleDateString('en-IN', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric',
-                            })}
-                          </Text>
-                        </Pressable>
-                        <Pressable onPress={() => showMode('time')} style={styles.datePressable}>
-                          <Text style={styles.dateText}>
-                            {watchDate.toLocaleTimeString('en-IN', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </Text>
-                        </Pressable>
+                        <Text style={styles.dateTimeText}>Date</Text>
+                        <View style={styles.dateTimePressableWrapper}>
+                          <Pressable onPress={() => showMode('date')} style={styles.datePressable}>
+                            <Text style={styles.dateText}>
+                              {watchDate.toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                              })}
+                            </Text>
+                          </Pressable>
+                          <Pressable onPress={() => showMode('time')} style={styles.datePressable}>
+                            <Text style={styles.dateText}>
+                              {watchDate.toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </Text>
+                          </Pressable>
+                        </View>
                       </View>
                       <CustomButton
                         title={data.isLogged ? 'update' : 'save'}
@@ -371,15 +374,18 @@ const styles = StyleSheet.create({
   dateTimeWrapper: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     paddingRight: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
     borderColor: BORDERS_COLORS.PRIMARY,
   },
+  dateTimePressableWrapper: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end' },
   datePressable: {
     paddingHorizontal: 4,
     paddingVertical: 8,
   },
+  dateTimeText: { fontSize: FONT_SIZE.H3, color: 'white', marginLeft: 12 },
   dateText: { fontSize: FONT_SIZE.H3, color: TEXT_COLORS.BODY_L2 },
 });
 
