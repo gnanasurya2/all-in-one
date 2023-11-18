@@ -1,3 +1,4 @@
+mod expense_tracker;
 mod guard;
 mod hello_world;
 mod movies_tracker;
@@ -10,11 +11,13 @@ use reqwest::Client;
 use sea_orm::DatabaseConnection;
 use tower_http::cors::{Any, CorsLayer};
 
+use expense_tracker::get_tracked_expense::get_tracked_expense;
 use guard::guard;
 use hello_world::hello_world;
 use movies_tracker::add_watched_movies::add_watched_movie;
 use movies_tracker::get_movies::get_movies;
 use movies_tracker::get_watched_movies::get_watched_movies;
+use movies_tracker::get_watchlist_movies::get_watchlist_movies;
 use movies_tracker::search_movies::search_movies;
 use movies_tracker::update_watched_movies::update_watched_movies;
 use users::create_users;
@@ -39,6 +42,8 @@ pub fn create_routes(database: DatabaseConnection) -> Router {
         .route("/movies/add_watched", post(add_watched_movie))
         .route("/movies/update_watched", patch(update_watched_movies))
         .route("/movies/get_tracked", get(get_watched_movies))
+        .route("/movies/get_watchlist", get(get_watchlist_movies))
+        .route("/expense/get_tracked", get(get_tracked_expense))
         .route("/user/logout", post(logout))
         .route_layer(middleware::from_fn(guard))
         .route("/hello", get(hello_world))

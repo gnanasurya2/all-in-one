@@ -1,16 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
-
 import { MovieNavigatorStackParamList } from '../../Navigation/MovieApp/MovieAppNavigator';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthContext } from '../../context/AuthContext';
+import { DrawerScreenProps } from '@react-navigation/drawer';
 import { useGetTrackedMovies } from '../../api/movies/getTrackedMovies';
 import TrackedMovie from '../../components/TrackedMovie';
 import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
-import CustomButton from '../../components/Button';
 import { readLastNSMS } from '../../modules/read-sms';
+import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
+import { CompositeScreenProps } from '@react-navigation/native';
 
 export type MovieData =
   | {
@@ -26,8 +26,10 @@ export type MovieData =
   | { header: true; title: string; id: string; isLast: boolean };
 const HomeScreen = ({
   navigation,
-}: NativeStackScreenProps<MovieNavigatorStackParamList, 'Home'>) => {
-  const { authContext } = useContext(AuthContext);
+}: CompositeScreenProps<
+  DrawerScreenProps<MovieNavigatorDrawerParamList, 'Home'>,
+  NativeStackScreenProps<MovieNavigatorStackParamList>
+>) => {
   const [moviesData, setMoviesData] = useState<Array<MovieData>>([]);
   const [headerIndices, setHeaderIndices] = useState<Array<number>>([0]);
 
@@ -89,18 +91,20 @@ const HomeScreen = ({
         <Pressable
           hitSlop={10}
           onPress={() => {
-            navigation.navigate('Search');
+            navigation.openDrawer();
           }}
         >
-          <FontAwesome5 name="search" size={18} color="white" />
+          <FontAwesome5 name="bars" size={24} color="white" />
+        </Pressable>
+        <Pressable
+          hitSlop={10}
+          onPress={() => {
+            navigation.jumpTo('Search');
+          }}
+        >
+          <FontAwesome5 name="search" size={24} color="white" />
         </Pressable>
       </View>
-      <CustomButton
-        title="Logout"
-        onPress={() => {
-          authContext.signOut();
-        }}
-      />
       <FlatList
         data={moviesData}
         stickyHeaderIndices={headerIndices}
@@ -128,11 +132,12 @@ const styles = StyleSheet.create({
     backgroundColor: SURFACE_COLORS.PAGE,
   },
   header: {
-    height: 50,
+    height: 60,
     backgroundColor: SURFACE_COLORS.TERTIARY,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
   },
   text: {
     color: TEXT_COLORS.SUCCESS,

@@ -1,7 +1,7 @@
 import { View, StyleSheet, Pressable } from 'react-native';
 import { MovieData } from '../../Screens/Movies/HomeScreen';
 import Text from '../Text';
-import { BORDERS_COLORS, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
+import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
 import PosterImage from '../PosterImage';
 import { FontAwesome } from '@expo/vector-icons';
 import { useMemo } from 'react';
@@ -62,7 +62,7 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
 
 const styles = StyleSheet.create({
   headerWrapper: {
-    backgroundColor: SURFACE_COLORS.TERTIARY,
+    backgroundColor: SURFACE_COLORS.HIGHLIGHT,
     justifyContent: 'center',
     paddingVertical: 12,
     paddingLeft: 12,

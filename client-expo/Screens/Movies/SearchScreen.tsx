@@ -18,9 +18,11 @@ const SearchScreen = ({
 
   const { data, fetchNextPage } = useSearchMovies({ title: debouncedSearchText });
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    const unsubscribe = navigation.addListener('transitionEnd', () => {
+      console.log('input ref', inputRef.current);
+      inputRef.current?.focus();
+    });
+    return unsubscribe;
   }, []);
 
   const searchResults = useMemo(() => {

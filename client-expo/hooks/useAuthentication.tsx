@@ -2,10 +2,11 @@ import React, { useReducer } from 'react';
 type AuthenticationData = {
   isLoggedIn: boolean;
   token: string | null;
+  username?: string;
 };
 
 type AuthenticationActions =
-  | { type: 'SIGN_IN'; token: string }
+  | { type: 'SIGN_IN'; token: string; username: string }
   | { type: 'SIGN_OUT' }
   | { type: 'RESTORE_TOKEN'; token: string };
 
@@ -24,6 +25,7 @@ const authenticationReducer = (
       return {
         ...state,
         token: action.token,
+        username: action.username,
         isLoggedIn: true,
       };
     case 'SIGN_OUT':

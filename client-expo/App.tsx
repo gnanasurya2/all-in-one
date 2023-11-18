@@ -5,6 +5,7 @@
  * @format
  */
 
+import 'react-native-gesture-handler';
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import MainNavigator from './Navigation/MainNavigator';
 import { NavigationContainer } from '@react-navigation/native';
@@ -94,7 +95,7 @@ function App(): JSX.Element {
         await setItemAsync('userDetails', JSON.stringify({ username, password }));
         await setItemAsync('userToken', response.data.token);
 
-        dispatch({ type: 'SIGN_IN', token: response.data.token });
+        dispatch({ type: 'SIGN_IN', token: response.data.token, username });
       },
       signIn: async ({ username, password }: { username: string; password: string }) => {
         const response = await axios.post<{
@@ -109,7 +110,7 @@ function App(): JSX.Element {
         await setItemAsync('userDetails', JSON.stringify({ username, password }));
         await setItemAsync('userToken', response.data.token);
 
-        dispatch({ type: 'SIGN_IN', token: response.data.token });
+        dispatch({ type: 'SIGN_IN', token: response.data.token, username });
       },
       signOut: async () => {
         await deleteItemAsync('userToken');

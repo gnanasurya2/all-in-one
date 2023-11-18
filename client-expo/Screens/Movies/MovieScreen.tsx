@@ -83,7 +83,7 @@ const MovieScreen = ({
   const showMode = (currentMode: datePickerMode) => {
     DateTimePickerAndroid.open({
       value: watchDate,
-      onChange: (event, date) => {
+      onChange: (_, date) => {
         date && setWatchedDate(date);
       },
       mode: currentMode,
@@ -231,10 +231,10 @@ const MovieScreen = ({
                                 (oldData) =>
                                   oldData
                                     ? {
-                                        ...oldData,
-                                        ...response.data,
-                                        isLogged: true,
-                                      }
+                                      ...oldData,
+                                      ...response.data,
+                                      isLogged: true,
+                                    }
                                     : oldData
                               );
                             }
