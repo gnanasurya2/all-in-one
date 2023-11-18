@@ -3,7 +3,6 @@ import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-cor
 // Import the native module. On web, it will be resolved to ReadSms.web.ts
 // and on native platforms to ReadSms.ts
 import ReadSmsModule from './src/ReadSmsModule';
-import ReadSmsView from './src/ReadSmsView';
 import { ChangeEventPayload, Message, ReadSmsViewProps } from './src/ReadSms.types';
 
 export function readLastNSMS(numberOfMessages = 10): Array<Message> {
@@ -23,4 +22,4 @@ export function hello(): string {
 }
 
 
-export { ReadSmsView, ReadSmsViewProps, ChangeEventPayload,Message };
+export {  ReadSmsViewProps, ChangeEventPayload,Message };

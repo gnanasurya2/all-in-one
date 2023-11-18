@@ -32,13 +32,5 @@ public class ReadSmsModule: Module {
       ])
     }
 
-    // Enables the module to be used as a native view. Definition components that are accepted as part of the
-    // view definition: Prop, Events.
-    View(ReadSmsView.self) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { (view: ReadSmsView, prop: String) in
-        print(prop)
-      }
-    }
   }
 }

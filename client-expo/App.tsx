@@ -5,7 +5,6 @@
  * @format
  */
 
-import 'react-native-gesture-handler';
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import MainNavigator from './Navigation/MainNavigator';
 import { NavigationContainer } from '@react-navigation/native';
@@ -24,7 +23,7 @@ import { getItemAsync, setItemAsync, deleteItemAsync } from 'expo-secure-store';
 import addTokenInterceptor from './utils/interceptors';
 import { hello, readLastSMS, requestSMSPermission } from './modules/read-sms';
 //TODO: make env variables work.
-axios.defaults.baseURL = 'http://localhost:1540';
+axios.defaults.baseURL = 'https://all-in-one-server.onrender.com';
 
 const queryClient = new QueryClient();
 

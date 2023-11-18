@@ -11,7 +11,7 @@ const HomeScreen = ({ navigation }: NativeStackScreenProps<RootNavigatorParamLis
       <Pressable
         style={[styles.chipWrapper, { backgroundColor: '#FF6B6B' }]}
         onPress={() => {
-          navigation.navigate('Movies', { screen: 'Home' });
+          navigation.navigate('Movies', { screen: 'Home' } as any);
         }}
       >
         <Text style={styles.content}>Movies</Text>
