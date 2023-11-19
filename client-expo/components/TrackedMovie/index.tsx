@@ -49,8 +49,8 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
               <Text style={styles.yearText}>{props.year}</Text>
             </View>
             <View style={styles.starView}>
-              {rating.map((value) => (
-                <FontAwesome name={value} size={12} color={SURFACE_COLORS.SUCCESS} />
+              {rating.map((value, index) => (
+                <FontAwesome name={value} id={index.toString()} size={12} color={SURFACE_COLORS.SUCCESS} />
               ))}
             </View>
           </View>

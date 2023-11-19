@@ -23,7 +23,7 @@ import { getItemAsync, setItemAsync, deleteItemAsync } from 'expo-secure-store';
 import addTokenInterceptor from './utils/interceptors';
 import { hello, readLastSMS, requestSMSPermission } from './modules/read-sms';
 //TODO: make env variables work.
-axios.defaults.baseURL = 'https://all-in-one-server.onrender.com';
+axios.defaults.baseURL = "http://localhost:1540";
 
 const queryClient = new QueryClient();
 

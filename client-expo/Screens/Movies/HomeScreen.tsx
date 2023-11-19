@@ -14,15 +14,15 @@ import { CompositeScreenProps } from '@react-navigation/native';
 
 export type MovieData =
   | {
-      header: false;
-      title: string;
-      year: number;
-      rating: number;
-      day: number;
-      id: string;
-      poster: string;
-      isLast: boolean;
-    }
+    header: false;
+    title: string;
+    year: number;
+    rating: number;
+    day: number;
+    id: string;
+    poster: string;
+    isLast: boolean;
+  }
   | { header: true; title: string; id: string; isLast: boolean };
 const HomeScreen = ({
   navigation,
@@ -62,10 +62,11 @@ const HomeScreen = ({
               headerIndices.push(result.length + 1);
               result[result.length - 1].isLast = true;
             }
+            const generatedId = Math.random().toString();
             result.push({
               header: true,
               title: `${currentMonth} ${watchedDate.getFullYear()}`,
-              id: Math.random().toString(),
+              id: generatedId,
               isLast: false,
             });
             lastMonth = currentMonth;
