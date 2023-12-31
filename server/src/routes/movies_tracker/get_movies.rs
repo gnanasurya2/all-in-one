@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 use std::env;
 
 use crate::database::movies::{self, Entity as Movies};
-use crate::database::users::Model;
+use crate::routes::guard::AuthData;
 use crate::utils::app_error::AppError;
+use crate::utils::format_date::format_date;
 use crate::utils::type_conversion::i8_to_bool;
 
 #[allow(non_snake_case)]
@@ -80,7 +81,7 @@ pub struct GetMoviesApiResponse {
 pub async fn get_movies(
     Extension(client): Extension<Client>,
     Extension(database): Extension<DatabaseConnection>,
-    Extension(user): Extension<Model>,
+    Extension(user): Extension<AuthData>,
     Query(query): Query<QueryParams>,
 ) -> Result<Json<GetMoviesApiResponse>, AppError> {
     let api_key = env::var("OMDB_API_KEY").unwrap();
@@ -161,11 +162,7 @@ pub async fn get_movies(
                 final_response.liked = Some(i8_to_bool(watched_data.liked));
                 final_response.watched = Some(i8_to_bool(watched_data.watched));
                 final_response.watch_list = Some(i8_to_bool(watched_data.watch_list));
-                let watched_date = match watched_data.watched_date {
-                    Some(date) => date.to_string(),
-                    None => "".to_owned(),
-                };
-                final_response.watched_date = Some(watched_date);
+                final_response.watched_date = Some(format_date(watched_data.watched_date));
                 final_response.rating = Some(watched_data.rating);
                 final_response.isLogged = true;
                 final_response.tracked_id = Some(watched_data.id);

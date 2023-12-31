@@ -21,6 +21,7 @@ export type MovieData =
       day: number;
       id: string;
       poster: string;
+      liked: boolean;
       isLast: boolean;
     }
   | { header: true; title: string; id: string; isLast: boolean };
@@ -39,7 +40,9 @@ const HomeScreen = ({
     console.log(
       'read last n messages',
       JSON.stringify(
-        readLastNSMS(100).filter((ele) => /^[A-Z]{2}-PAYTMB$/.test(ele.address)),
+        readLastNSMS(100).filter(
+          (ele) => /^[A-Z]{2}-PAYTMB$/.test(ele.address) && /Received|sent/i.test(ele.body)
+        ),
         undefined,
         2
       )
@@ -62,10 +65,11 @@ const HomeScreen = ({
               headerIndices.push(result.length + 1);
               result[result.length - 1].isLast = true;
             }
+            const generatedId = Math.random().toString();
             result.push({
               header: true,
               title: `${currentMonth} ${watchedDate.getFullYear()}`,
-              id: Math.random().toString(),
+              id: generatedId,
               isLast: false,
             });
             lastMonth = currentMonth;
@@ -78,6 +82,7 @@ const HomeScreen = ({
             id: value.imdb_id,
             poster: value.poster,
             day: watchedDate.getDate(),
+            liked: value.liked,
             isLast: false,
           });
         });
@@ -112,6 +117,7 @@ const HomeScreen = ({
         renderItem={({ item }) => (
           <TrackedMovie
             {...item}
+            key={item.id}
             onPressHandler={(id) => navigation.push('Movie', { movieId: id, type: 'movie' })}
           />
         )}

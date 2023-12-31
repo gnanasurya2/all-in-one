@@ -49,9 +49,15 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
               <Text style={styles.yearText}>{props.year}</Text>
             </View>
             <View style={styles.starView}>
-              {rating.map((value) => (
-                <FontAwesome name={value} size={12} color={SURFACE_COLORS.SUCCESS} />
+              {rating.map((value, index) => (
+                <FontAwesome
+                  name={value}
+                  key={`${props.id}-${index.toString()}`}
+                  size={12}
+                  color={SURFACE_COLORS.SUCCESS}
+                />
               ))}
+              {props.liked && <FontAwesome name={'heart'} size={10} style={styles.likedIcon} />}
             </View>
           </View>
         </View>
@@ -105,5 +111,6 @@ const styles = StyleSheet.create({
   titleWrapper: { flexDirection: 'row' },
   movieTitleText: { fontWeight: 'bold' },
   yearText: { marginLeft: 4, color: TEXT_COLORS.BODY_L2 },
+  likedIcon: { marginLeft: 8, alignSelf: 'center', color: SURFACE_COLORS.BRIGHT_ORANGE },
 });
 export default TrackedMovie;

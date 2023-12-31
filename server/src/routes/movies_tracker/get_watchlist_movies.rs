@@ -1,5 +1,5 @@
+use axum::http::StatusCode;
 use axum::{extract::Query, Extension, Json};
-use reqwest::StatusCode;
 use sea_orm::{
     ColumnTrait, DatabaseConnection, EntityTrait, FromQueryResult, PaginatorTrait, QueryFilter,
     QueryOrder, QuerySelect,
@@ -7,7 +7,8 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 
 use crate::database::movies::{self, Entity as Movies};
-use crate::{database::users::Model, utils::app_error::AppError};
+use crate::routes::guard::AuthData;
+use crate::utils::app_error::AppError;
 
 #[derive(Deserialize)]
 pub struct QueryParams {
@@ -30,7 +31,7 @@ pub struct ResponseWatchlistMovies {
 }
 pub async fn get_watchlist_movies(
     Extension(database): Extension<DatabaseConnection>,
-    Extension(user): Extension<Model>,
+    Extension(user): Extension<AuthData>,
     Query(query): Query<QueryParams>,
 ) -> Result<Json<ResponseWatchlistMovies>, AppError> {
     let watchlist_movies: Vec<ResponseWatchlistMovie> = Movies::find()

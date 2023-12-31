@@ -6,20 +6,22 @@ import { WatchlistMovieType, useGetWatchlistMovies } from '../../api/movies/getW
 import WatchlistMovie from '../../components/WatchlistMovie';
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
-import { useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
 
 const WatchListScreen = ({
   navigation,
 }: DrawerScreenProps<MovieNavigatorDrawerParamList, 'WatchList'>) => {
   const { data, fetchNextPage, refetch } = useGetWatchlistMovies({ page_size: 32 });
   const [watchlistMovies, setWatchlistMovies] = useState<Array<WatchlistMovieType>>([]);
+
+  useRefreshOnFocus(refetch);
   useEffect(() => {
     if (data?.pages) {
       setWatchlistMovies(data.pages.flatMap((value) => value.response, [data]));
     }
   }, [data]);
-  //   useFocusEffect(refetch as any);
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>

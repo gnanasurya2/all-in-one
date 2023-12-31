@@ -1,14 +1,28 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import Text from '../../components/Text';
+import { Animated, StyleSheet, View } from 'react-native';
+import Transcation from '../../components/Transcation';
+import Carousel from '../../components/Carousel';
 
 const HomeScreen = () => {
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.text}>coding in neo vim </Text>
-      <Text>Expense tracker</Text>
-      <Text>still trying out nvim</Text>
-
+      <View style={{ height: 190 }}>
+        <Carousel />
+      </View>
+      <Transcation
+        isIncome={false}
+        title="Burger King"
+        date={1700419164658}
+        amount={1200}
+        category="Food & Drinks"
+      />
+      <Transcation
+        isIncome={true}
+        title="Salary"
+        date={1700418154658}
+        amount={87439}
+        category="Income"
+      />
     </View>
   );
 };
@@ -18,11 +32,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 16,
   },
-  text: {
-    color: "red",
-    fontSize: 16,
-    textAlign: "center"
-  }
 });
 export default HomeScreen;

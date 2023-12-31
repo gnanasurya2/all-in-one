@@ -13,6 +13,7 @@ export interface TrackedMovie {
   year: number;
   imdb_id: string;
   title: string;
+  liked: boolean;
 }
 
 export interface getTrackedMoviesResponse {

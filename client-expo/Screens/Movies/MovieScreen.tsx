@@ -60,6 +60,7 @@ const MovieScreen = ({
 
   useEffect(() => {
     if (data) {
+      console.log('date', data.watched_date, new Date(data.watched_date ?? new Date()));
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
@@ -231,10 +232,10 @@ const MovieScreen = ({
                                 (oldData) =>
                                   oldData
                                     ? {
-                                      ...oldData,
-                                      ...response.data,
-                                      isLogged: true,
-                                    }
+                                        ...oldData,
+                                        ...response.data,
+                                        isLogged: true,
+                                      }
                                     : oldData
                               );
                             }

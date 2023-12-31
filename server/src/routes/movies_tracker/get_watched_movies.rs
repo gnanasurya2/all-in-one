@@ -1,7 +1,7 @@
+use axum::http::StatusCode;
 use axum::Json;
 use axum::{extract::Query, Extension};
 use chrono::NaiveDateTime;
-use reqwest::StatusCode;
 use sea_orm::{
     ColumnTrait, DatabaseConnection, EntityTrait, FromQueryResult, PaginatorTrait, QueryFilter,
     QueryOrder, QuerySelect,
@@ -9,8 +9,10 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 
 use crate::database::movies::{self, Entity as Movies};
-use crate::database::users::Model;
+use crate::routes::guard::AuthData;
 use crate::utils::app_error::AppError;
+use crate::utils::format_date::format_date;
+use crate::utils::type_conversion::i8_to_bool;
 
 #[derive(Deserialize)]
 pub struct QueryParams {
@@ -26,6 +28,7 @@ pub struct QueryResultTrackedMovie {
     year: i32,
     imdb_id: String,
     title: String,
+    liked: Option<i8>,
 }
 
 #[derive(FromQueryResult, Serialize, Deserialize)]
@@ -36,6 +39,7 @@ pub struct ResponseTrackedMovie {
     year: i32,
     imdb_id: String,
     title: String,
+    liked: bool,
 }
 
 #[derive(Serialize)]
@@ -47,7 +51,7 @@ pub struct ResponseWatchedMovies {
 
 pub async fn get_watched_movies(
     Extension(database): Extension<DatabaseConnection>,
-    Extension(user): Extension<Model>,
+    Extension(user): Extension<AuthData>,
     Query(query): Query<QueryParams>,
 ) -> Result<Json<ResponseWatchedMovies>, AppError> {
     let tracked_movies: Vec<ResponseTrackedMovie> = Movies::find()
@@ -59,6 +63,7 @@ pub async fn get_watched_movies(
             movies::Column::WatchedDate,
             movies::Column::ImdbId,
             movies::Column::Title,
+            movies::Column::Liked,
         ])
         .filter(movies::Column::UserId.eq(user.id))
         .filter(movies::Column::Watched.eq(1))
@@ -75,13 +80,11 @@ pub async fn get_watched_movies(
         .map(|db_movie| ResponseTrackedMovie {
             poster: db_movie.poster,
             rating: db_movie.rating,
-            watched_date: match db_movie.watched_date {
-                Some(date) => date.to_string(),
-                None => "".to_owned(),
-            },
+            watched_date: format_date(db_movie.watched_date),
             imdb_id: db_movie.imdb_id,
             year: db_movie.year,
             title: db_movie.title,
+            liked: i8_to_bool(db_movie.liked),
         })
         .collect();
 

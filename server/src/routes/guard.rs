@@ -1,41 +1,28 @@
-use axum::{
+use axum::{body::Body, http::Request, middleware::Next, response::Response};
+use axum_extra::{
     headers::{authorization::Bearer, Authorization},
-    http::{Request, StatusCode},
-    middleware::Next,
-    response::Response,
     TypedHeader,
 };
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::{
-    database::users::{self, Entity as Users},
-    utils::jwt::is_valid,
-};
+use crate::utils::{app_error::AppError, jwt::decode_token};
 
-pub async fn guard<T>(
+#[derive(Clone)]
+pub struct AuthData {
+    pub id: i32,
+}
+
+pub async fn guard(
     TypedHeader(token): TypedHeader<Authorization<Bearer>>,
-    mut request: Request<T>,
-    next: Next<T>,
-) -> Result<Response, StatusCode> {
+    mut request: Request<Body>,
+    next: Next,
+) -> Result<Response, AppError> {
     println!("request {:?}", request.uri());
     let token = token.token().to_owned();
-    is_valid(&token)?;
-    let database = request
-        .extensions()
-        .get::<DatabaseConnection>()
-        .ok_or_else(|| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let token_data = decode_token(&token)?;
 
-    let user = Users::find()
-        .filter(users::Column::Token.eq(token))
-        .one(database)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    let Some(user) = user else {
-        return Err(StatusCode::UNAUTHORIZED);
-    };
-
-    request.extensions_mut().insert(user);
+    request.extensions_mut().insert(AuthData {
+        id: token_data.cust_id,
+    });
 
     Ok(next.run(request).await)
 }
