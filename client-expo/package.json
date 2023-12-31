@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "NODE_ENV=development expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "publish": "NODE_ENV=development eas build -p android --profile preview2"
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
