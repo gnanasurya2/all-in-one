@@ -3,7 +3,7 @@ import React from 'react';
 import HomeScreen from '../../Screens/ExpenseTracker/HomeScreen';
 
 export type ExpenseTrackerNavigatorParamList = {
-  Home: undefined;
+  ExpenseHome: undefined;
 };
 
 const Stack = createNativeStackNavigator<ExpenseTrackerNavigatorParamList>();
@@ -11,12 +11,12 @@ const Stack = createNativeStackNavigator<ExpenseTrackerNavigatorParamList>();
 const ExpenseTrackerNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="ExpenseHome"
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="ExpenseHome" component={HomeScreen} />
     </Stack.Navigator>
   );
 };

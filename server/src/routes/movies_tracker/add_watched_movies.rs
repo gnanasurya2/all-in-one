@@ -1,12 +1,13 @@
+use axum::http::StatusCode;
 use axum::{Extension, Json};
 use chrono::NaiveDateTime;
-use reqwest::StatusCode;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, Set, TryIntoModel};
 use serde::{Deserialize, Serialize};
 
 use crate::database::movies;
-use crate::database::users::Model;
+use crate::routes::guard::AuthData;
 use crate::utils::app_error::AppError;
+use crate::utils::format_date::format_date;
 use crate::utils::type_conversion::i8_to_bool;
 
 #[derive(Deserialize)]
@@ -36,7 +37,7 @@ pub struct ResponseAddWatchedMovie {
 
 pub async fn add_watched_movie(
     Extension(database): Extension<DatabaseConnection>,
-    Extension(user): Extension<Model>,
+    Extension(user): Extension<AuthData>,
     Json(request_payload): Json<RequestAddWatchedMovie>,
 ) -> Result<Json<ResponseAddWatchedMovie>, AppError> {
     let watched_date =
@@ -69,10 +70,7 @@ pub async fn add_watched_movie(
         .try_into_model()
         .unwrap();
 
-    let watched_date = match result.watched_date {
-        Some(date) => date.to_string(),
-        None => "".to_owned(),
-    };
+    let watched_date = format_date(result.watched_date);
 
     Ok(Json(ResponseAddWatchedMovie {
         id: result.id,

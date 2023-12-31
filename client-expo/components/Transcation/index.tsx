@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Text from '../Text';
 import { StyleSheet, Pressable, View } from 'react-native';
 import { BORDERS_COLORS, FONT_FAMILY, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
-import { Swipeable } from 'react-native-gesture-handler';
-
+import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import RightSwipeActions from './RightSwipeAction';
 interface TranscationProps {
   isIncome: boolean;
   title: string;
@@ -11,8 +12,6 @@ interface TranscationProps {
   amount: number;
   category: string;
 }
-
-//TODO: Create a function handle  to renderLeftHandle for the Swipeable
 
 const Transcation = ({ isIncome, title, date, amount, category }: TranscationProps) => {
   const [formattedDate, formattedTime, formattedAmount] = useMemo(() => {
@@ -30,10 +29,27 @@ const Transcation = ({ isIncome, title, date, amount, category }: TranscationPro
     return [finaldate, formattedTime, formattedAmount];
   }, [date, amount]);
 
+  const isHideBorderRadius = useSharedValue(false);
+
+  const animatedBorderRadius = useAnimatedStyle(() => ({
+    borderBottomLeftRadius: isHideBorderRadius.value ? 0 : 12,
+    borderTopLeftRadius: isHideBorderRadius.value ? 0 : 12,
+  }));
+
   return (
-    <View style={{ width: '100%' }}>
-      <Swipeable>
-        <Pressable style={styles.wrapper}>
+    <Animated.View style={[styles.wrapper, animatedBorderRadius]}>
+      <Swipeable
+        renderRightActions={(progress, dragX) => {
+          return <RightSwipeActions progress={progress} dragX={dragX} />;
+        }}
+        onSwipeableOpenStartDrag={() => {
+          isHideBorderRadius.value = true;
+        }}
+        onSwipeableClose={() => {
+          isHideBorderRadius.value = false;
+        }}
+      >
+        <Pressable style={{ backgroundColor: SURFACE_COLORS.PAGE, borderRadius: 12 }}>
           <View style={styles.titleWrapper}>
             <Text style={styles.titleText}>{title}</Text>
             <View style={styles.dateWrapper}>
@@ -46,12 +62,12 @@ const Transcation = ({ isIncome, title, date, amount, category }: TranscationPro
               {isIncome ? '+' : '-'} {formattedAmount}
             </Text>
             <View style={styles.category}>
-              <Text style={styles.categoryText}>Food & drinks</Text>
+              <Text style={styles.categoryText}>{category}</Text>
             </View>
           </View>
         </Pressable>
       </Swipeable>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -59,7 +75,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     color: TEXT_COLORS.BODY_L2,
-    fontWeight: 500,
+    fontWeight: '500',
   },
   titleWrapper: {
     paddingHorizontal: 12,
@@ -71,7 +87,7 @@ const styles = StyleSheet.create({
   },
   dateWrapper: {
     flexDirection: 'row',
-    fontWeight: 500,
+    fontWeight: '500',
     fontSize: 16,
   },
   dateText: {

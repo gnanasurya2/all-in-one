@@ -14,15 +14,16 @@ import { CompositeScreenProps } from '@react-navigation/native';
 
 export type MovieData =
   | {
-    header: false;
-    title: string;
-    year: number;
-    rating: number;
-    day: number;
-    id: string;
-    poster: string;
-    isLast: boolean;
-  }
+      header: false;
+      title: string;
+      year: number;
+      rating: number;
+      day: number;
+      id: string;
+      poster: string;
+      liked: boolean;
+      isLast: boolean;
+    }
   | { header: true; title: string; id: string; isLast: boolean };
 const HomeScreen = ({
   navigation,
@@ -39,7 +40,9 @@ const HomeScreen = ({
     console.log(
       'read last n messages',
       JSON.stringify(
-        readLastNSMS(100).filter((ele) => /^[A-Z]{2}-PAYTMB$/.test(ele.address)),
+        readLastNSMS(100).filter(
+          (ele) => /^[A-Z]{2}-PAYTMB$/.test(ele.address) && /Received|sent/i.test(ele.body)
+        ),
         undefined,
         2
       )
@@ -79,6 +82,7 @@ const HomeScreen = ({
             id: value.imdb_id,
             poster: value.poster,
             day: watchedDate.getDate(),
+            liked: value.liked,
             isLast: false,
           });
         });
@@ -113,6 +117,7 @@ const HomeScreen = ({
         renderItem={({ item }) => (
           <TrackedMovie
             {...item}
+            key={item.id}
             onPressHandler={(id) => navigation.push('Movie', { movieId: id, type: 'movie' })}
           />
         )}

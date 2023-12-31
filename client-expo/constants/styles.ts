@@ -28,6 +28,7 @@ export const SURFACE_COLORS = {
   DISABLED: '#0A1E2C',
   MODAL: '#0A1E2C',
   INFORMATION: '#0E53B3',
+  BRIGHT_ORANGE: '#FA4616',
   WARNING: '#A3671C',
   SUCCESS: '#0CC221',
   ERROR: '#C30C0B',
@@ -75,5 +76,5 @@ export const GRADIENT_COLORS = [
   '#FF6699', // Pink
   '#66CC33', // Lime Green
   '#CC66FF', // Lavender
-  '#FFCC00',  // Yellow
+  '#FFCC00', // Yellow
 ];

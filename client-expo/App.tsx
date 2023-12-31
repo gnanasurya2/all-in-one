@@ -22,8 +22,8 @@ import { AuthContext } from './context/AuthContext';
 import { getItemAsync, setItemAsync, deleteItemAsync } from 'expo-secure-store';
 import addTokenInterceptor from './utils/interceptors';
 import { hello, readLastSMS, requestSMSPermission } from './modules/read-sms';
-//TODO: make env variables work.
-axios.defaults.baseURL = "http://localhost:1540";
+
+axios.defaults.baseURL = process.env.EXPO_PUBLIC_API_URL;
 
 const queryClient = new QueryClient();
 
@@ -53,7 +53,7 @@ function App(): JSX.Element {
   }, [state.token]);
 
   useEffect(() => {
-    console.log('calling native module function', hello());
+    console.log('calling native module function', hello(), process.env.EXPO_PUBLIC_API_URL);
     const bootstrapAsync = async () => {
       const token = await getItemAsync('userToken');
       if (token) {
@@ -97,6 +97,7 @@ function App(): JSX.Element {
         dispatch({ type: 'SIGN_IN', token: response.data.token, username });
       },
       signIn: async ({ username, password }: { username: string; password: string }) => {
+        console.log('base url', axios.defaults.baseURL);
         const response = await axios.post<{
           username: string;
           id: number;

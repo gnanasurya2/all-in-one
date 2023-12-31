@@ -1,5 +1,5 @@
-use axum::{response::IntoResponse, Json};
-use reqwest::StatusCode;
+use axum::{http::StatusCode, response::IntoResponse, Json};
+
 use serde::Serialize;
 
 #[derive(Debug)]

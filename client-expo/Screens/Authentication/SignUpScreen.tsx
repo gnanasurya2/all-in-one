@@ -44,7 +44,7 @@ const SignUpScreen = ({
     setIsLoading(false);
   };
   return (
-    <View style={styles.wrapper}>
+    (<View style={styles.wrapper}>
       <Text>SignUp Screen</Text>
       <Controller
         control={control}
@@ -75,7 +75,6 @@ const SignUpScreen = ({
         )}
       />
       <Text style={styles.errorText}>{errors.username?.message}</Text>
-
       <Controller
         control={control}
         name="password"
@@ -103,7 +102,7 @@ const SignUpScreen = ({
         <Text style={styles.signInText}>Already have an account Login!</Text>
       </Pressable>
       <CustomButton title="Login" onPress={handleSubmit(onSubmit)} isLoading={isLoading} />
-    </View>
+    </View>)
   );
 };
 
