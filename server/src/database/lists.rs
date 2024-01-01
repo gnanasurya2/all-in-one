@@ -2,28 +2,20 @@
 
 use sea_orm::entity::prelude::*;
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "movies")]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
+#[sea_orm(table_name = "lists")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub imdb_id: String,
-    pub liked: Option<i8>,
-    pub watched: Option<i8>,
-    pub watch_list: Option<i8>,
-    pub user_id: i32,
-    #[sea_orm(column_type = "Float")]
-    pub rating: f32,
-    pub created_at: Option<DateTimeUtc>,
-    pub updated_at: Option<DateTimeUtc>,
-    pub watched_date: Option<DateTime>,
-    pub poster: Option<String>,
-    pub year: i32,
     pub title: String,
+    pub description: Option<String>,
+    pub user_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::movie_lists::Entity")]
+    MovieLists,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::UserId",
@@ -32,6 +24,12 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Users,
+}
+
+impl Related<super::movie_lists::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::MovieLists.def()
+    }
 }
 
 impl Related<super::users::Entity> for Entity {
