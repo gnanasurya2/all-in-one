@@ -14,12 +14,17 @@ use tower_http::cors::{Any, CorsLayer};
 use expense_tracker::get_tracked_expense::get_tracked_expense;
 use guard::guard;
 use hello_world::hello_world;
+use movies_tracker::add_movie_to_lists::add_movie_to_lists;
+use movies_tracker::add_new_list::add_new_list;
 use movies_tracker::add_watched_movies::add_watched_movie;
+use movies_tracker::get_movie_list::get_movie_list;
+use movies_tracker::get_movie_lists::get_movie_lists;
 use movies_tracker::get_movies::get_movies;
 use movies_tracker::get_watched_movies::get_watched_movies;
 use movies_tracker::get_watchlist_movies::get_watchlist_movies;
 use movies_tracker::search_movies::search_movies;
 use movies_tracker::update_watched_movies::update_watched_movies;
+
 use users::create_users;
 use users::login;
 use users::logout;
@@ -43,6 +48,10 @@ pub fn create_routes(database: DatabaseConnection) -> Router {
         .route("/movies/update_watched", patch(update_watched_movies))
         .route("/movies/get_tracked", get(get_watched_movies))
         .route("/movies/get_watchlist", get(get_watchlist_movies))
+        .route("/movies/add_to_list", post(add_movie_to_lists))
+        .route("/movies/lists/add", post(add_new_list))
+        .route("/movies/lists", get(get_movie_lists))
+        .route("/movies/lists/:list_id", get(get_movie_list))
         .route("/expense/get_tracked", get(get_tracked_expense))
         .route("/user/logout", post(logout))
         .route_layer(middleware::from_fn(guard))

@@ -2,5 +2,7 @@
 
 pub mod prelude;
 
+pub mod lists;
+pub mod movie_lists;
 pub mod movies;
 pub mod users;

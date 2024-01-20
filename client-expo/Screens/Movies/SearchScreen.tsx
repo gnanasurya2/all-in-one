@@ -5,24 +5,24 @@ import SearchInput from '../../components/SearchInput';
 import { useSearchMovies } from '../../api/movies';
 import { useDebounce } from '../../hooks/useDebounce';
 import { MovieSearchResult } from '../../components/MovieSearchResult';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { MovieNavigatorStackParamList } from '../../Navigation/MovieApp/MovieAppNavigator';
 import Separator from '../../components/Separator';
+import { DrawerScreenProps } from '@react-navigation/drawer';
+import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
 
 const SearchScreen = ({
   navigation,
-}: NativeStackScreenProps<MovieNavigatorStackParamList, 'Search'>) => {
+}: DrawerScreenProps<MovieNavigatorDrawerParamList, 'Search'>) => {
   const [searchText, setSearchText] = useState('');
   const inputRef = useRef<TextInput | null>(null);
   const debouncedSearchText = useDebounce(searchText, 400).trim();
 
   const { data, fetchNextPage } = useSearchMovies({ title: debouncedSearchText });
   useEffect(() => {
-    const unsubscribe = navigation.addListener('transitionEnd', () => {
-      console.log('input ref', inputRef.current);
-      inputRef.current?.focus();
-    });
-    return unsubscribe;
+    // const unsubscribe = navigation.addListener('transitionEnd', () => {
+    //   console.log('input ref', inputRef.current);
+    //   inputRef.current?.focus();
+    // });
+    // return unsubscribe;
   }, []);
 
   const searchResults = useMemo(() => {
@@ -38,7 +38,7 @@ const SearchScreen = ({
           <MovieSearchResult
             {...item}
             onPressHandler={(id, type) => {
-              navigation.push('Movie', { movieId: id, type });
+              navigation.navigate('Movie', { movieId: id, type });
             }}
           />
         )}

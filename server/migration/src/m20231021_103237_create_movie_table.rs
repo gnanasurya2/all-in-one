@@ -4,7 +4,7 @@ use sea_orm_migration::prelude::*;
 pub struct Migration;
 
 #[derive(DeriveIden)]
-enum Movies {
+pub enum Movies {
     Table,
     Id,
     ImdbId,

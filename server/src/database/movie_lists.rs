@@ -3,35 +3,32 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "users")]
+#[sea_orm(table_name = "movie_lists")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub username: String,
-    pub email: Option<String>,
-    pub password_hash: String,
-    pub password_salt: String,
-    pub created_at: Option<DateTimeUtc>,
-    pub token: Option<String>,
+    pub title: String,
+    pub poster: Option<String>,
+    pub imdb_id: String,
+    pub list_id: i32,
+    pub updated_at: Option<DateTimeUtc>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::lists::Entity")]
+    #[sea_orm(
+        belongs_to = "super::lists::Entity",
+        from = "Column::ListId",
+        to = "super::lists::Column::Id",
+        on_update = "Cascade",
+        on_delete = "Cascade"
+    )]
     Lists,
-    #[sea_orm(has_many = "super::movies::Entity")]
-    Movies,
 }
 
 impl Related<super::lists::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Lists.def()
-    }
-}
-
-impl Related<super::movies::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Movies.def()
     }
 }
 

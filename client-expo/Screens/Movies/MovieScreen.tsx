@@ -10,12 +10,10 @@ import {
   TEXT_COLORS,
 } from '../../constants/styles';
 import Text from '../../components/Text';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { MovieNavigatorStackParamList } from '../../Navigation/MovieApp/MovieAppNavigator';
 import { getMovieResponse, useGetMovies } from '../../api/movies/getMovies';
 import PosterImage from '../../components/PosterImage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import StarRating from '../../components/StarRating';
 import ShowMore from '../../components/ShowMoreComponent';
 import CustomButton from '../../components/Button';
@@ -24,6 +22,8 @@ import { useAddTrackedMovie } from '../../api/movies/addWatchedMovie';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useUpdateTrackedMovie } from '../../api/movies/updateWatchedMovie';
 import { useQueryClient } from '@tanstack/react-query';
+import { DrawerScreenProps } from '@react-navigation/drawer';
+import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
 
 type datePickerMode = 'date' | 'time';
 
@@ -32,7 +32,7 @@ const MovieScreen = ({
   route: {
     params: { movieId, type },
   },
-}: NativeStackScreenProps<MovieNavigatorStackParamList, 'Movie'>) => {
+}: DrawerScreenProps<MovieNavigatorDrawerParamList, 'Movie'>) => {
   const [watched, setWatched] = useState(false);
   const [liked, setLiked] = useState(false);
   const [watchList, setWatchList] = useState(false);
@@ -142,7 +142,7 @@ const MovieScreen = ({
                   <BottomSheetModal
                     ref={bottomSheetModalRef}
                     index={0}
-                    snapPoints={[430]}
+                    snapPoints={[500]}
                     handleIndicatorStyle={{
                       backgroundColor: 'white',
                     }}
@@ -205,6 +205,19 @@ const MovieScreen = ({
                           </Pressable>
                         </View>
                       </View>
+                      <Pressable
+                        style={styles.listWrapper}
+                        onPress={() => {
+                          navigation.navigate('ListsSelect', {
+                            imdbId: movieId,
+                            title: data.Title,
+                            poster: data.Poster,
+                          });
+                        }}
+                      >
+                        <MaterialIcons name="add" color={TEXT_COLORS.BODY_L2} size={24} />
+                        <Text style={styles.listText}>Add to lists</Text>
+                      </Pressable>
                       <CustomButton
                         title={data.isLogged ? 'update' : 'save'}
                         style={styles.saveButton}
@@ -388,6 +401,21 @@ const styles = StyleSheet.create({
   },
   dateTimeText: { fontSize: FONT_SIZE.H3, color: 'white', marginLeft: 12 },
   dateText: { fontSize: FONT_SIZE.H3, color: TEXT_COLORS.BODY_L2 },
+  listWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
+    borderColor: BORDERS_COLORS.PRIMARY,
+  },
+  listText: {
+    color: TEXT_COLORS.BODY_L2,
+    marginLeft: 4,
+    fontSize: 16,
+  },
 });
 
 export default MovieScreen;

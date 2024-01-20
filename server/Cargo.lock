@@ -2228,6 +2228,7 @@ dependencies = [
  "dotenv",
  "dotenvy_macro",
  "headers",
+ "itertools",
  "jsonwebtoken",
  "rand",
  "reqwest",

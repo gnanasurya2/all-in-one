@@ -6,7 +6,8 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::database::movies::{self, Entity as Movies};
+use crate::database::movies;
+use crate::database::prelude::Movies;
 use crate::routes::guard::AuthData;
 use crate::utils::app_error::AppError;
 
