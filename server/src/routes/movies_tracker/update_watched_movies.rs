@@ -1,4 +1,5 @@
-use crate::database::movies::{self, Entity as Movies};
+use crate::database::movies;
+use crate::database::prelude::Movies;
 use crate::utils::app_error::AppError;
 use crate::utils::format_date::format_date;
 use crate::utils::type_conversion::i8_to_bool;

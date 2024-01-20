@@ -11,6 +11,7 @@ pub struct Model {
     pub poster: Option<String>,
     pub imdb_id: String,
     pub list_id: i32,
+    pub updated_at: Option<DateTimeUtc>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

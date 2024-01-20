@@ -6,8 +6,8 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::database::users::Entity as Users;
-use crate::database::users::{self};
+use crate::database::prelude::Users;
+use crate::database::users;
 use crate::utils::app_error::AppError;
 use crate::utils::jwt::create_jwt;
 

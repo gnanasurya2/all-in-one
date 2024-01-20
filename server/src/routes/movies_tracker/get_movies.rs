@@ -4,7 +4,7 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use std::env;
 
-use crate::database::movies::{self, Entity as Movies};
+use crate::database::{movies, prelude::Movies};
 use crate::routes::guard::AuthData;
 use crate::utils::app_error::AppError;
 use crate::utils::format_date::format_date;

@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
-import { MovieNavigatorStackParamList } from '../../Navigation/MovieApp/MovieAppNavigator';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import { useGetTrackedMovies } from '../../api/movies/getTrackedMovies';
 import TrackedMovie from '../../components/TrackedMovie';
 import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
 import { readLastNSMS } from '../../modules/read-sms';
 import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
-import { CompositeScreenProps } from '@react-navigation/native';
 
 export type MovieData =
   | {
@@ -25,12 +22,7 @@ export type MovieData =
       isLast: boolean;
     }
   | { header: true; title: string; id: string; isLast: boolean };
-const HomeScreen = ({
-  navigation,
-}: CompositeScreenProps<
-  DrawerScreenProps<MovieNavigatorDrawerParamList, 'Home'>,
-  NativeStackScreenProps<MovieNavigatorStackParamList>
->) => {
+const HomeScreen = ({ navigation }: DrawerScreenProps<MovieNavigatorDrawerParamList, 'Home'>) => {
   const [moviesData, setMoviesData] = useState<Array<MovieData>>([]);
   const [headerIndices, setHeaderIndices] = useState<Array<number>>([0]);
 
@@ -118,7 +110,7 @@ const HomeScreen = ({
           <TrackedMovie
             {...item}
             key={item.id}
-            onPressHandler={(id) => navigation.push('Movie', { movieId: id, type: 'movie' })}
+            onPressHandler={(id) => navigation.navigate('Movie', { movieId: id, type: 'movie' })}
           />
         )}
         keyExtractor={(item) => item.id}

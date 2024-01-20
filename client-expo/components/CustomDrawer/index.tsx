@@ -12,12 +12,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 
 const CustomDrawer = (props: DrawerContentComponentProps) => {
-  const { state, authContext } = useContext(AuthContext);
+  const { state: authState, authContext } = useContext(AuthContext);
+
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.profileWrapper}>
         <Image source={require('../../assets/profile.jpeg')} style={styles.profileImage} />
-        <Text style={{ fontSize: 16, color: 'white' }}>{state.username}</Text>
+        <Text style={{ fontSize: 16, color: 'white' }}>{authState.username}</Text>
       </View>
       <DrawerItemList {...props} />
       <DrawerItem
