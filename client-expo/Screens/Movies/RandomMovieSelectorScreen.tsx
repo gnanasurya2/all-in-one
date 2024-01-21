@@ -43,21 +43,22 @@ const RandomMovieSeletorScreen = ({
   }, [watchlistMovies.length]);
 
   const spinPressHandler = () => {
-    translateX.value = (width * (watchlistMovies.length - 1)) / 2;
+    let halfItemValue = (watchlistMovies.length - 1) / 2;
+    translateX.value = halfItemValue * width;
     translateX.value = withRepeat(
       withTiming(-translateX.value, {
         duration: watchlistMovies.length * 150,
         easing: Easing.linear,
       }),
-      2,
+      1,
       false,
       () => {
         const interpolatedNumber = interpolate(
           Math.floor(Math.random() * watchlistMovies.length),
           [0, watchlistMovies.length - 1],
-          [2.5 * width, -2.5 * width]
+          [halfItemValue * width, -halfItemValue * width]
         );
-        translateX.value = (width * (watchlistMovies.length - 1)) / 2;
+        translateX.value = halfItemValue * width;
         translateX.value = withTiming(interpolatedNumber, {
           duration: watchlistMovies.length * 150,
           easing: Easing.linear,

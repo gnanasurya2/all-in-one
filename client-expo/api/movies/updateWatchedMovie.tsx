@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { addTrackedMovieResponse } from './addWatchedMovie';
 import { getMovieResponse } from './getMovies';
+import { getWatchlistMoviesResponse } from './getWatchlistMovies';
 
 export interface updateTrackedMovieResponse {
   id: number;
@@ -31,7 +32,15 @@ const updateTrackedMovie = async (props: updateTrackedMovieRequest) => {
   return response.data;
 };
 
-export const useUpdateTrackedMovie = ({ id, type }: { id: string; type: string }) => {
+export const useUpdateTrackedMovie = ({
+  id,
+  type,
+  poster,
+}: {
+  id: string;
+  type: string;
+  poster: string;
+}) => {
   const queryClient = useQueryClient();
   const query = useMutation({
     mutationFn: updateTrackedMovie,
@@ -48,6 +57,25 @@ export const useUpdateTrackedMovie = ({ id, type }: { id: string; type: string }
               ...data,
             }
           : oldData
+      );
+
+      queryClient.setQueryData<InfiniteData<getWatchlistMoviesResponse> | undefined>(
+        ['watchlistMovies'],
+        (oldData) => {
+          if (oldData) {
+            if (!data.watch_list) {
+              oldData.pages = oldData.pages.map((page) => {
+                page.response = page.response.filter((result) => {
+                  return result.imdb_id !== id;
+                });
+                return page;
+              });
+            } else {
+              oldData.pages[0].response.unshift({ imdb_id: id, poster: poster, title: data.title });
+            }
+          }
+          return oldData;
+        }
       );
     },
   });

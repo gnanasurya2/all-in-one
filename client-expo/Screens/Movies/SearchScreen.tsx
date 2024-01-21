@@ -38,6 +38,7 @@ const SearchScreen = ({
           <MovieSearchResult
             {...item}
             onPressHandler={(id, type) => {
+              setSearchText('');
               navigation.navigate('Movie', { movieId: id, type });
             }}
           />

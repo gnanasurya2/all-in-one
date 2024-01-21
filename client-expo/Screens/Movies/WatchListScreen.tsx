@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Pressable } from 'react-native';
 import Text from '../../components/Text';
 import { FONT_FAMILY, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
@@ -8,6 +8,7 @@ import { DrawerScreenProps } from '@react-navigation/drawer';
 import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
+import { useFocusEffect } from '@react-navigation/native';
 
 const WatchListScreen = ({
   navigation,
@@ -15,7 +16,15 @@ const WatchListScreen = ({
   const { data, fetchNextPage, refetch } = useGetWatchlistMovies({ page_size: 32 });
   const [watchlistMovies, setWatchlistMovies] = useState<Array<WatchlistMovieType>>([]);
 
-  useRefreshOnFocus(refetch);
+  useFocusEffect(
+    useCallback(() => {
+      console.log('data-pages');
+      if (data?.pages) {
+        setWatchlistMovies(data.pages.flatMap((value) => value.response, [data]));
+      }
+    }, [])
+  );
+
   useEffect(() => {
     if (data?.pages) {
       setWatchlistMovies(data.pages.flatMap((value) => value.response, [data]));

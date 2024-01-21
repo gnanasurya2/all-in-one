@@ -40,7 +40,11 @@ const MovieScreen = ({
   const [starRating, setStarRating] = useState(0);
   const { data } = useGetMovies({ id: movieId, type });
 
-  const { mutate } = useUpdateTrackedMovie({ id: movieId, type });
+  const { mutate, isSuccess } = useUpdateTrackedMovie({
+    id: movieId,
+    type,
+    poster: data?.Poster || '',
+  });
   const {
     data: trackMovieData,
     refetch,
@@ -60,7 +64,12 @@ const MovieScreen = ({
 
   useEffect(() => {
     if (data) {
-      console.log('date', data.watched_date, new Date(data.watched_date ?? new Date()));
+      console.log(
+        'date',
+        data.tracked_id,
+        data.watched_date,
+        new Date(data.watched_date ?? new Date())
+      );
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
@@ -76,6 +85,12 @@ const MovieScreen = ({
   }, [movieId]);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  useEffect(() => {
+    if (isSuccess) {
+      bottomSheetModalRef.current?.close();
+    }
+  }, [isSuccess]);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -123,10 +138,18 @@ const MovieScreen = ({
                 </View>
                 <PosterImage url={data.Poster} width={100} height={148} />
               </View>
+              <View style={styles.genreWrapper}>
+                {data.Genre.map((item) => (
+                  <View key={item} style={styles.genre}>
+                    <Text>{item}</Text>
+                  </View>
+                ))}
+              </View>
               <ShowMore textLimit={250} style={styles.plotText}>
                 {data.Plot}
               </ShowMore>
               <Text>{data.Actors.join(',  ')}</Text>
+
               <Text style={styles.ratingText}>Rating {data.imdbRating}</Text>
               <CustomButton
                 onPress={handlePresentModalPress}
@@ -415,6 +438,17 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.BODY_L2,
     marginLeft: 4,
     fontSize: 16,
+  },
+  genreWrapper: {
+    flexDirection: 'row',
+    marginVertical: 16,
+  },
+  genre: {
+    backgroundColor: SURFACE_COLORS.BRIGHT_ORANGE,
+    marginHorizontal: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
 });
 
