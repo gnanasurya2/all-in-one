@@ -39,6 +39,7 @@ const ListAddScreen = ({
       setToastValue(true);
       return false;
     }
+    return true;
   };
 
   const createListHandler = async () => {
@@ -90,6 +91,9 @@ const ListAddScreen = ({
       <Pressable style={styles.addEntriesWrapper}>
         <Text>Add entries...</Text>
       </Pressable>
+      <Pressable onPress={createListHandler} style={styles.createButton}>
+        <Text style={styles.createButtonText}>CREATE</Text>
+      </Pressable>
       <Toast toastValue={toastValue} setToastValue={setToastValue} children={toastText} />
     </View>
   );
@@ -128,6 +132,16 @@ const styles = StyleSheet.create({
   addEntriesWrapper: {
     flex: 1,
     paddingHorizontal: 8,
+  },
+  createButton: {
+    backgroundColor: SURFACE_COLORS.SUCCESS,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  createButtonText: {
+    fontSize: FONT_SIZE.H2,
+    fontFamily: FONT_FAMILY.HELVETICA_ROUNDED,
   },
 });
 
