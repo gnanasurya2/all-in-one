@@ -17,7 +17,8 @@ ARG APP_NAME
 WORKDIR /app
 
 # Install host build dependencies.
-RUN apt-get update && apt-get install -y clang lld musl-dev git openssl libssl-dev
+RUN apt-get update
+RUN apt-get install -y clang lld musl-dev git openssl libssl-dev
 ENV SQLX_OFFLINE true
 # Build the application.
 # Leverage a cache mount to /usr/local/cargo/registry/

@@ -1,24 +1,22 @@
-import { View, StyleSheet, useWindowDimensions, Pressable } from 'react-native';
-import Text from '../../components/Text';
-import { WatchlistMovieType, useGetWatchlistMovies } from '../../api/movies/getWatchlistMovies';
+import { WatchlistMovieType, useGetWatchlistMovies } from '@api/movies/getWatchlistMovies';
+import Loader from '@components/Loader';
+import MovieItem from '@components/MovieItem';
+import Text from '@components/Text';
+import { SURFACE_COLORS } from '@constants/styles';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import MovieItem from '../../components/MovieItem';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, {
-  useSharedValue,
-  withTiming,
   Easing,
-  useAnimatedStyle,
-  withRepeat,
   interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
 } from 'react-native-reanimated';
-import { SURFACE_COLORS } from '../../constants/styles';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
 
-const RandomMovieSeletorScreen = ({
-  navigation,
-}: DrawerScreenProps<MovieNavigatorDrawerParamList, 'MovieSelector'>) => {
-  const { data } = useGetWatchlistMovies({ page_size: 32 });
+const RandomMovieSeletorScreen = () => {
+  const { data, isLoading } = useGetWatchlistMovies({ page_size: 32 });
   const [watchlistMovies, setWatchlistMovies] = useState<Array<WatchlistMovieType>>([]);
   const translateX = useSharedValue(0);
 
@@ -69,23 +67,34 @@ const RandomMovieSeletorScreen = ({
 
   return (
     <View style={styles.wrapper}>
-      <Animated.View style={[styles.randomWrapper, animatedStyle]}>
-        {watchlistMovies.map((item) => (
-          <MovieItem
-            title={item.title}
-            poster={item.poster}
-            key={item.imdb_id}
-            onPressHandler={() => {
-              navigation.navigate('Movie', { movieId: item.imdb_id, type: 'movie' });
-            }}
-          />
-        ))}
-      </Animated.View>
-      <View style={styles.bottomWrapper}>
-        <Pressable style={styles.buttonWrapper} onPress={spinPressHandler}>
-          <Text style={styles.buttonText}> Spin </Text>
-        </Pressable>
-      </View>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <Animated.View style={[styles.randomWrapper, animatedStyle]}>
+            {watchlistMovies.map((item) => (
+              <MovieItem
+                title={item.title}
+                poster={item.poster}
+                key={item.imdb_id}
+                onPressHandler={() => {
+                  router.navigate({
+                    pathname: '/(app)/movies/movie',
+                    params: {
+                      id: item.imdb_id,
+                    },
+                  });
+                }}
+              />
+            ))}
+          </Animated.View>
+          <View style={styles.bottomWrapper}>
+            <Pressable style={styles.buttonWrapper} onPress={spinPressHandler}>
+              <Text style={styles.buttonText}> Spin </Text>
+            </Pressable>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -95,6 +104,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: SURFACE_COLORS.PAGE,
   },
   randomWrapper: {
     flexDirection: 'row',

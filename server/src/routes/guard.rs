@@ -3,6 +3,7 @@ use axum_extra::{
     headers::{authorization::Bearer, Authorization},
     TypedHeader,
 };
+use log::info;
 
 use crate::utils::{app_error::AppError, jwt::decode_token};
 
@@ -16,7 +17,11 @@ pub async fn guard(
     mut request: Request<Body>,
     next: Next,
 ) -> Result<Response, AppError> {
-    println!("request {:?}", request.uri());
+    info!(
+        "request received {}, token: {}",
+        request.uri(),
+        token.token()
+    );
     let token = token.token().to_owned();
     let token_data = decode_token(&token)?;
 

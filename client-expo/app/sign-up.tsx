@@ -1,14 +1,15 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Pressable, TextInput } from 'react-native';
-import { AuthenticationStackParamList } from '../../Navigation/Authentication/AuthenticationNavigator';
-import Text from '../../components/Text';
-import { SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
+import { AuthenticationStackParamList } from '../Navigation/Authentication/AuthenticationNavigator';
+import Text from '../components/Text';
+import { SURFACE_COLORS, TEXT_COLORS } from '../constants/styles';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import CustomButton from '../../components/Button';
-import { AuthContext } from '../../context/AuthContext';
+import CustomButton from '../components/Button';
+import { AuthContext, useSession } from '../context/AuthContext';
+import { Link, router } from 'expo-router';
 
 const schema = yup
   .object({
@@ -17,10 +18,8 @@ const schema = yup
   })
   .required();
 
-const SignUpScreen = ({
-  navigation,
-}: NativeStackScreenProps<AuthenticationStackParamList, 'Login'>) => {
-  const { authContext } = useContext(AuthContext);
+const SignUp = () => {
+  const { createAccount } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const {
     control,
@@ -36,7 +35,8 @@ const SignUpScreen = ({
   const onSubmit = async (data: { username: string; password: string }) => {
     setIsLoading(true);
     try {
-      await authContext.createAccount({ ...data });
+      await createAccount?.({ ...data });
+      router.replace('/');
     } catch (err) {
       console.log('error', err);
     }
@@ -44,7 +44,7 @@ const SignUpScreen = ({
     setIsLoading(false);
   };
   return (
-    (<View style={styles.wrapper}>
+    <View style={styles.wrapper}>
       <Text>SignUp Screen</Text>
       <Controller
         control={control}
@@ -94,15 +94,13 @@ const SignUpScreen = ({
         )}
       />
       {errors.password && <Text style={styles.errorText}>This is required</Text>}
-      <Pressable
-        onPress={() => {
-          navigation.navigate('Login');
-        }}
-      >
-        <Text style={styles.signInText}>Already have an account Login!</Text>
-      </Pressable>
+      <Link href="/sign-in" asChild>
+        <Pressable>
+          <Text style={styles.signInText}>Already have an account Login!</Text>
+        </Pressable>
+      </Link>
       <CustomButton title="Login" onPress={handleSubmit(onSubmit)} isLoading={isLoading} />
-    </View>)
+    </View>
   );
 };
 
@@ -131,4 +129,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default SignUp;

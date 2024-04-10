@@ -1,29 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Pressable } from 'react-native';
-import Text from '../../components/Text';
-import { FONT_FAMILY, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
-import { WatchlistMovieType, useGetWatchlistMovies } from '../../api/movies/getWatchlistMovies';
-import WatchlistMovie from '../../components/WatchlistMovie';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
-import { useFocusEffect } from '@react-navigation/native';
+import { WatchlistMovieType, useGetWatchlistMovies } from '@api/movies/getWatchlistMovies';
+import Text from '@components/Text';
+import WatchlistMovie from '@components/WatchlistMovie';
+import { FONT_FAMILY, SURFACE_COLORS, TEXT_COLORS } from '@constants/styles';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 
-const WatchListScreen = ({
-  navigation,
-}: DrawerScreenProps<MovieNavigatorDrawerParamList, 'WatchList'>) => {
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRefreshOnFocus } from '@hooks/useRefreshOnFocus';
+import { router } from 'expo-router';
+
+const WatchListScreen = () => {
   const { data, fetchNextPage, refetch } = useGetWatchlistMovies({ page_size: 32 });
   const [watchlistMovies, setWatchlistMovies] = useState<Array<WatchlistMovieType>>([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      console.log('data-pages');
-      if (data?.pages) {
-        setWatchlistMovies(data.pages.flatMap((value) => value.response, [data]));
-      }
-    }, [])
-  );
+  useRefreshOnFocus(refetch);
 
   useEffect(() => {
     if (data?.pages) {
@@ -36,7 +26,7 @@ const WatchListScreen = ({
       <View style={styles.header}>
         <Pressable
           onPress={() => {
-            navigation.goBack();
+            router.back();
           }}
         >
           <MaterialIcons name="arrow-back-ios" size={24} color="white" />
@@ -53,9 +43,11 @@ const WatchListScreen = ({
             poster={item.poster}
             id={item.imdb_id}
             onPresshandler={(id) => {
-              navigation.navigate('Movie', {
-                movieId: id,
-                type: 'movie',
+              router.navigate({
+                pathname: '/(app)/movies/movie',
+                params: {
+                  id,
+                },
               });
             }}
           />

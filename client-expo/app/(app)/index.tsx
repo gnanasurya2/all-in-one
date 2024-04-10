@@ -1,29 +1,30 @@
+import { Link } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Text from '../components/Text';
-import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS } from '../constants/styles';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootNavigatorParamList } from '../Navigation/RootNavigator';
+import Text from '../../components/Text';
+import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS } from '../../constants/styles';
 
-const HomeScreen = ({ navigation }: NativeStackScreenProps<RootNavigatorParamList, 'Home'>) => {
+const HomeScreen = () => {
   return (
     <View style={styles.wrapper}>
-      <Pressable
+      <Link
+        href={'/(app)/movies'}
+        asChild
         style={[styles.chipWrapper, { backgroundColor: '#FF6B6B' }]}
-        onPress={() => {
-          navigation.navigate('Movies', { screen: 'MoviesHome' } as any);
-        }}
       >
-        <Text style={styles.content}>Movies</Text>
-      </Pressable>
-      <Pressable
+        <Pressable>
+          <Text style={styles.content}>Movies</Text>
+        </Pressable>
+      </Link>
+      <Link
+        href={'/(app)/expense'}
+        asChild
         style={[styles.chipWrapper, { backgroundColor: '#0b8a4b' }]}
-        onPress={() => {
-          navigation.navigate('ExpenseTracker', { screen: 'ExpenseHome' });
-        }}
       >
-        <Text style={styles.content}>Expense tracker</Text>
-      </Pressable>
+        <Pressable>
+          <Text style={styles.content}>Expense tracker</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 };
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: SURFACE_COLORS.PAGE,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 16,
+    paddingVertical: 16,
   },
   chipWrapper: {
     backgroundColor: '#FFA500',

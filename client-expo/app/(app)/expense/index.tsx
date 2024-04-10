@@ -1,7 +1,8 @@
 import React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import Transcation from '../../components/Transcation';
-import Carousel from '../../components/Carousel';
+import { StyleSheet, View } from 'react-native';
+import Transcation from '@components/Transcation';
+import Carousel from '@components/Carousel';
+import { SURFACE_COLORS } from '../../../constants/styles';
 
 const HomeScreen = () => {
   return (
@@ -32,7 +33,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    backgroundColor: SURFACE_COLORS.PAGE,
   },
 });
 export default HomeScreen;

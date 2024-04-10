@@ -1,5 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { useAddTrackedMovie } from '@api/movies/addWatchedMovie';
+import { getMovieResponse, useGetMovies } from '@api/movies/getMovies';
+import { useUpdateTrackedMovie } from '@api/movies/updateWatchedMovie';
+import CustomButton from '@components/Button';
+import Loader from '@components/Loader';
+import PosterImage from '@components/PosterImage';
+import ShowMore from '@components/ShowMoreComponent';
+import StarRating from '@components/StarRating';
+import Text from '@components/Text';
 import {
   BORDERS_COLORS,
   FONT_FAMILY,
@@ -8,48 +15,36 @@ import {
   GRADIENT_COLORS,
   SURFACE_COLORS,
   TEXT_COLORS,
-} from '../../constants/styles';
-import Text from '../../components/Text';
-import { getMovieResponse, useGetMovies } from '../../api/movies/getMovies';
-import PosterImage from '../../components/PosterImage';
-import { LinearGradient } from 'expo-linear-gradient';
+} from '@constants/styles';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import StarRating from '../../components/StarRating';
-import ShowMore from '../../components/ShowMoreComponent';
-import CustomButton from '../../components/Button';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useAddTrackedMovie } from '../../api/movies/addWatchedMovie';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useUpdateTrackedMovie } from '../../api/movies/updateWatchedMovie';
 import { useQueryClient } from '@tanstack/react-query';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 type datePickerMode = 'date' | 'time';
 
-const MovieScreen = ({
-  navigation,
-  route: {
-    params: { movieId, type },
-  },
-}: DrawerScreenProps<MovieNavigatorDrawerParamList, 'Movie'>) => {
+const MovieScreen = () => {
   const [watched, setWatched] = useState(false);
   const [liked, setLiked] = useState(false);
   const [watchList, setWatchList] = useState(false);
   const [watchDate, setWatchedDate] = useState(new Date());
   const [starRating, setStarRating] = useState(0);
-  const { data } = useGetMovies({ id: movieId, type });
+  const { id: movieId = '', type = 'movie' } = useLocalSearchParams<{
+    id: string;
+    type: string;
+  }>();
+  const { data, isLoading } = useGetMovies({ id: movieId, type });
 
   const { mutate, isSuccess } = useUpdateTrackedMovie({
     id: movieId,
     type,
     poster: data?.Poster || '',
   });
-  const {
-    data: trackMovieData,
-    refetch,
-    isFetching,
-  } = useAddTrackedMovie({
+  const { refetch, isFetching } = useAddTrackedMovie({
     imdb_id: movieId,
     liked,
     watch_list: watchList,
@@ -108,11 +103,11 @@ const MovieScreen = ({
   };
 
   return (
-    <>
+    <View style={styles.outerWrapper}>
       <Pressable
         style={styles.iconWrapper}
         onPress={() => {
-          navigation.goBack();
+          router.back();
         }}
       >
         <FontAwesome5 name="chevron-left" size={24} color="white" />
@@ -231,11 +226,11 @@ const MovieScreen = ({
                       <Pressable
                         style={styles.listWrapper}
                         onPress={() => {
-                          navigation.navigate('ListsSelect', {
-                            imdbId: movieId,
-                            title: data.Title,
-                            poster: data.Poster,
-                          });
+                          //   navigation.navigate('ListsSelect', {
+                          //     imdbId: movieId,
+                          //     title: data.Title,
+                          //     poster: data.Poster,
+                          //   });
                         }}
                       >
                         <MaterialIcons name="add" color={TEXT_COLORS.BODY_L2} size={24} />
@@ -284,15 +279,19 @@ const MovieScreen = ({
               </BottomSheetModalProvider>
             </>
           ) : (
-            <Text>loading...</Text>
+            <Loader />
           )}
         </View>
       </ScrollView>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerWrapper: {
+    backgroundColor: SURFACE_COLORS.PAGE,
+    flex: 1,
+  },
   iconWrapper: {
     position: 'absolute',
     padding: 8,
@@ -301,7 +300,6 @@ const styles = StyleSheet.create({
   icon: {
     width: 50,
     height: 50,
-    stroke: 'white',
   },
   scrollViewContent: {
     flexGrow: 1,

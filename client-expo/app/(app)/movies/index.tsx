@@ -1,13 +1,13 @@
+import { useGetTrackedMovies } from '@api/movies/getTrackedMovies';
+import TrackedMovie from '@components/TrackedMovie';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useRefreshOnFocus } from '@hooks/useRefreshOnFocus';
+import { readLastNSMS } from '@modules/read-sms';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { useGetTrackedMovies } from '../../api/movies/getTrackedMovies';
-import TrackedMovie from '../../components/TrackedMovie';
-import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
-import { readLastNSMS } from '../../modules/read-sms';
-import { MovieNavigatorDrawerParamList } from '../../Navigation/MovieApp/MovieSideBarNavigation';
+import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../../constants/styles';
+import { Link, useRouter, useNavigation } from 'expo-router';
+import MenuButton from '@components/MenuButton';
 
 export type MovieData =
   | {
@@ -22,9 +22,11 @@ export type MovieData =
       isLast: boolean;
     }
   | { header: true; title: string; id: string; isLast: boolean };
-const HomeScreen = ({ navigation }: DrawerScreenProps<MovieNavigatorDrawerParamList, 'Home'>) => {
+
+const HomeScreen = () => {
   const [moviesData, setMoviesData] = useState<Array<MovieData>>([]);
   const [headerIndices, setHeaderIndices] = useState<Array<number>>([0]);
+  const router = useRouter();
 
   const { data, fetchNextPage, refetch } = useGetTrackedMovies({ page_size: 15 });
 
@@ -85,22 +87,12 @@ const HomeScreen = ({ navigation }: DrawerScreenProps<MovieNavigatorDrawerParamL
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
-        <Pressable
-          hitSlop={10}
-          onPress={() => {
-            navigation.openDrawer();
-          }}
-        >
-          <FontAwesome5 name="bars" size={24} color="white" />
-        </Pressable>
-        <Pressable
-          hitSlop={10}
-          onPress={() => {
-            navigation.jumpTo('Search');
-          }}
-        >
-          <FontAwesome5 name="search" size={24} color="white" />
-        </Pressable>
+        <MenuButton />
+        <Link href="/movies/search" asChild>
+          <Pressable hitSlop={10}>
+            <FontAwesome5 name="search" size={24} color="white" />
+          </Pressable>
+        </Link>
       </View>
       <FlatList
         data={moviesData}
@@ -110,7 +102,14 @@ const HomeScreen = ({ navigation }: DrawerScreenProps<MovieNavigatorDrawerParamL
           <TrackedMovie
             {...item}
             key={item.id}
-            onPressHandler={(id) => navigation.navigate('Movie', { movieId: id, type: 'movie' })}
+            onPressHandler={(id) => {
+              router.navigate({
+                pathname: '/(app)/movies/movie',
+                params: {
+                  id,
+                },
+              });
+            }}
           />
         )}
         keyExtractor={(item) => item.id}
