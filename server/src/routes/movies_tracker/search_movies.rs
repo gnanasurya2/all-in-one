@@ -80,12 +80,12 @@ pub async fn search_movies(
     }
 
     println!("{}", request_url);
-    let response = client.get(request_url).send().await.map_err(|_| {
+    let response = client.get(request_url).send().await.map_err(|err| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(OmdbSearchErrorResponse {
                 Error: "Internal server error".to_string(),
-                Response: "Error".to_string(),
+                Response: err.to_string(),
             }),
         )
     })?;
