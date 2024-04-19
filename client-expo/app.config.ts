@@ -6,6 +6,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...config,
       name: 'client-expo',
       slug: 'client-expo',
+      scheme: 'allInOne',
       extra: {
         eas: {
           projectId: '8c92ef7a-0d26-4c3b-9119-6974a42d6904',
@@ -18,6 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     slug: 'all-in-one',
     name: 'all-in-one',
+    scheme: 'allInOne',
     android: {
       ...config?.android,
       package: 'com.anonymous.allinone',
