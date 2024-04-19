@@ -10,7 +10,7 @@
         "gradleCommand": ":app:assembleRelease"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://all-in-one-server.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://allinone.gnanasurya.com"
       }
     },
     "preview3": {

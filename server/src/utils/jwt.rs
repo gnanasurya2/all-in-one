@@ -1,8 +1,8 @@
 use axum::http::StatusCode;
 use chrono::{Duration, Utc};
-use dotenvy_macro::dotenv;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
+use std::env;
 
 use super::app_error::AppError;
 
@@ -23,7 +23,7 @@ pub fn create_jwt(cust_id: i32) -> Result<String, AppError> {
     let exp = now.timestamp() as usize;
 
     let claim = Claims { iat, exp, cust_id };
-    let secret: &'static str = dotenv!("JWT_SECRET");
+    let secret = env::var("JWT_SECRET").expect("JWT_SECRET is not in the enviroment");
 
     let key = EncodingKey::from_secret(secret.as_bytes());
 
@@ -36,7 +36,7 @@ pub fn create_jwt(cust_id: i32) -> Result<String, AppError> {
 }
 
 pub fn decode_token(token: &str) -> Result<Claims, AppError> {
-    let secret: &'static str = dotenv!("JWT_SECRET");
+    let secret = env::var("JWT_SECRET").expect("JWT_SECRET is not in the enviroment");
 
     let key = DecodingKey::from_secret(secret.as_bytes());
 

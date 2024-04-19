@@ -97,7 +97,6 @@ pub async fn get_movie_lists(
         .all(&database)
         .await
         .map_err(|err| {
-            println!("{:?}",err);
             AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "error while fetching the data",

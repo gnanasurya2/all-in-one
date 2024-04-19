@@ -14,7 +14,6 @@ export interface addMovieToListResoponse {
 }
 
 const addMovieToList = async (props: addMovieToListRequest) => {
-  console.log('props', props);
   const response = await axios.post('/movies/add_to_list', props);
   return response.data;
 };
@@ -27,7 +26,6 @@ export const useAddMovieToList = () => {
       queryClient.setQueryData<InfiniteData<GetMovieListsResponse>>(
         ['getMovieLists'],
         (oldData) => {
-          console.log('oldData', oldData);
           const newData = oldData?.pages.map((page) => {
             page.response = page.response.map((item) => {
               if (request.list_ids.includes(item.data.list_id)) {
@@ -41,7 +39,6 @@ export const useAddMovieToList = () => {
             });
             return page;
           });
-          console.log('newData', JSON.stringify(newData, null, 2));
           if (oldData?.pages) {
             oldData.pages = newData || [];
           }

@@ -1,0 +1,51 @@
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: proxy
+    hostname: proxy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  server:
+    image: server:1.2
+    container_name: server
+    hostname: server
+    environment:
+      - OMDB_API_KEY=${OMDB_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - 1540:1540
+    depends_on:
+      db:
+        condition: service_healthy
+    dns:
+      - 8.8.8.8
+  db:
+    image: mysql:8.0.27
+    container_name: database
+    hostname: database
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    volumes:
+      - './docker/db/data:/var/lib/mysql'
+      - './docker/db/my.cnf:/etc/mysql/conf.d/my.cnf'
+      - './docker/db/sql:/docker-entrypoint-initdb.d'
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD= "yes"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "db"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

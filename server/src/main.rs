@@ -1,14 +1,19 @@
 extern crate dotenv;
 
 use dotenv::dotenv;
-use dotenvy_macro::dotenv;
+use log::info;
 use server::run;
+use std::env;
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
 
-    let database_url = dotenv!("DATABASE_URL");
+    env_logger::init();
 
-    run(database_url).await
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not found in enviroment");
+
+    info!("application starting !!!");
+
+    run(&database_url).await
 }

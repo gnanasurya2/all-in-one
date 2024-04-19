@@ -3,6 +3,7 @@ use reqwest::Client;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::error::Error;
 
 use crate::database::{movies, prelude::Movies};
 use crate::routes::guard::AuthData;
@@ -93,10 +94,11 @@ pub async fn get_movies(
 
     println!("{}", request_url);
 
-    let response =
-        client.get(request_url).send().await.map_err(|_| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "External request failed")
-        })?;
+    let response = client
+        .get(request_url)
+        .send()
+        .await
+        .map_err(|err| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, err.to_string()))?;
 
     let body = response.text().await.map_err(|_| {
         AppError::new(
