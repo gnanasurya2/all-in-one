@@ -8,6 +8,8 @@ mod m20231022_120942_add_movie_title_to_movie_table;
 mod m20231231_193712_create_lists_table;
 mod m20240101_084417_foreign_keys_tables;
 mod m20240106_071010_updated_at_timestamp;
+mod m20240420_203424_movie_lists_unique_contraint;
+mod m20240420_205023_add_number_of_movies_in_lists;
 
 pub struct Migrator;
 
@@ -23,6 +25,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20231231_193712_create_lists_table::Migration),
             Box::new(m20240101_084417_foreign_keys_tables::Migration),
             Box::new(m20240106_071010_updated_at_timestamp::Migration),
+            Box::new(m20240420_203424_movie_lists_unique_contraint::Migration),
+            Box::new(m20240420_205023_add_number_of_movies_in_lists::Migration),
         ]
     }
 }

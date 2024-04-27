@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 export interface addNewListRequest {
@@ -18,8 +18,12 @@ const addNewList = async (props: addNewListRequest) => {
 };
 
 export const useAddNewList = () => {
+  const queryClient = useQueryClient();
   const query = useMutation({
     mutationFn: addNewList,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMovieLists'] });
+    },
   });
   return query;
 };

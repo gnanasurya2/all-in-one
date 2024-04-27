@@ -35,9 +35,7 @@ export default function SignIn() {
     try {
       await signIn?.({ ...data });
       router.replace('/');
-    } catch (err) {
-      console.log('error', err);
-    }
+    } catch (err) {}
 
     setIsLoading(false);
   };

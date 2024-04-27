@@ -43,7 +43,7 @@ const WatchListScreen = () => {
             poster={item.poster}
             id={item.imdb_id}
             onPresshandler={(id) => {
-              router.navigate({
+              router.push({
                 pathname: '/(app)/movies/movie',
                 params: {
                   id,

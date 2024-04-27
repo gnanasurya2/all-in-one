@@ -1,10 +1,10 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { MovieData } from '../../Screens/Movies/HomeScreen';
 import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
 import PosterImage from '../PosterImage';
 import Text from '../Text';
+import { MovieData } from '../../app/(app)/movies';
 
 type ITrackedMovieProps = MovieData & {
   onPressHandler: (id: string) => void;

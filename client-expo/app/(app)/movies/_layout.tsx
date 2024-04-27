@@ -7,6 +7,7 @@ export default function MovieLayout() {
   return (
     <Drawer
       drawerContent={(props) => <CustomDrawer {...props} />}
+      backBehavior="history"
       screenOptions={{
         headerShown: false,
         drawerLabelStyle: {
@@ -61,6 +62,29 @@ export default function MovieLayout() {
           drawerIcon: ({ size }) => (
             <MaterialIcons size={size} name="movie-filter" color={'white'} />
           ),
+        }}
+      />
+      <Drawer.Screen
+        name="lists"
+        options={{
+          drawerLabel: 'Lists',
+          drawerIcon: ({ size }) => <MaterialIcons size={size} name="list" color={'white'} />,
+        }}
+      />
+      <Drawer.Screen
+        name="createLists"
+        options={{
+          drawerItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="viewLists"
+        options={{
+          drawerItemStyle: {
+            display: 'none',
+          },
         }}
       />
     </Drawer>

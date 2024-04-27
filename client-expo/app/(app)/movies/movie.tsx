@@ -59,12 +59,6 @@ const MovieScreen = () => {
 
   useEffect(() => {
     if (data) {
-      console.log(
-        'date',
-        data.tracked_id,
-        data.watched_date,
-        new Date(data.watched_date ?? new Date())
-      );
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
@@ -226,11 +220,14 @@ const MovieScreen = () => {
                       <Pressable
                         style={styles.listWrapper}
                         onPress={() => {
-                          //   navigation.navigate('ListsSelect', {
-                          //     imdbId: movieId,
-                          //     title: data.Title,
-                          //     poster: data.Poster,
-                          //   });
+                          router.push({
+                            pathname: '/(app)/movies/viewLists',
+                            params: {
+                              imdbId: movieId,
+                              title: data.Title,
+                              poster: data.Poster,
+                            },
+                          });
                         }}
                       >
                         <MaterialIcons name="add" color={TEXT_COLORS.BODY_L2} size={24} />

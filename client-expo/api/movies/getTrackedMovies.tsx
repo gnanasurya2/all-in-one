@@ -28,7 +28,6 @@ const getTrackedMovies = async (params: getTrackedMoviesParams) => {
     });
     return response.data;
   } catch (err) {
-    console.log('error', err);
     throw err;
   }
 };

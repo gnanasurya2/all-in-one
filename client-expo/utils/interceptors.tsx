@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const addTokenInterceptor = (token: string) => {
+export const addTokenInterceptor = (token: string) => {
   axios.interceptors.request.use(
     (config) => {
       config.headers.Authorization = `Bearer ${token}`;
@@ -12,4 +12,6 @@ const addTokenInterceptor = (token: string) => {
   );
 };
 
-export default addTokenInterceptor;
+export const removeRequestInterceptor = () => {
+  axios.interceptors.request.clear();
+};

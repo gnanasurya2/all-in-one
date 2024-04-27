@@ -39,7 +39,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
           setSession(response.data.token);
         },
         signIn: async ({ username, password }: { username: string; password: string }) => {
-          console.log('base url', axios.defaults.baseURL);
           const response = await axios.post<{
             username: string;
             id: number;

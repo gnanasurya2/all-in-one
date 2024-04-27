@@ -1,5 +1,6 @@
 use axum::{http::StatusCode, Extension, Json};
 use bcrypt::HashParts;
+use log::info;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
     Set,
@@ -91,6 +92,8 @@ pub async fn login(
         })?;
 
         let token = create_jwt(saved_user.id.clone().unwrap())?;
+
+        info!("token: {}", token);
 
         Ok(Json(ResponseUser {
             username: saved_user.username.unwrap(),

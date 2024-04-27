@@ -9,37 +9,16 @@ type MovieListProps = {
   numberOfFilms: number;
   description: string;
   onPressHandler: () => void;
-  onPosterPressHandler: (id: string) => void;
-  posters: Array<{
-    url: string;
-    imdb_id: string;
-  }>;
 };
-const MovieList = ({
-  title,
-  numberOfFilms,
-  description,
-  onPressHandler,
-  onPosterPressHandler,
-  posters,
-}: MovieListProps) => {
+const MovieList = ({ title, numberOfFilms, description, onPressHandler }: MovieListProps) => {
   return (
     <>
       <Pressable style={styles.wrapper} onPress={onPressHandler}>
         <View style={styles.titleWrapper}>
           <Text style={styles.listTitle}>{title}</Text>
-          <Text style={styles.numberStyles}>{numberOfFilms} films</Text>
+          <Text style={styles.numberStyles}>{numberOfFilms || '0'} films</Text>
         </View>
       </Pressable>
-      <FlatList
-        data={posters}
-        horizontal
-        renderItem={({ item }) => (
-          <Pressable onPress={() => onPosterPressHandler(item.imdb_id)}>
-            <PosterImage url={item.url} width={67} height={100} style={styles.poster} />
-          </Pressable>
-        )}
-      />
       <Pressable style={styles.wrapper} onPress={onPressHandler}>
         <Text style={styles.description}>{description}</Text>
       </Pressable>
