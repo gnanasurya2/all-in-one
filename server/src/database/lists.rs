@@ -11,6 +11,7 @@ pub struct Model {
     pub description: Option<String>,
     pub user_id: i32,
     pub updated_at: Option<DateTimeUtc>,
+    pub number_of_items: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

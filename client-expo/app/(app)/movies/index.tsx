@@ -103,7 +103,7 @@ const HomeScreen = () => {
             {...item}
             key={item.id}
             onPressHandler={(id) => {
-              router.navigate({
+              router.push({
                 pathname: '/(app)/movies/movie',
                 params: {
                   id,

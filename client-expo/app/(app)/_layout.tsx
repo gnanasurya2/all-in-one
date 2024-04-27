@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Drawer } from 'expo-router/drawer';
 import { useEffect } from 'react';
 import Text from '../../components/Text';
 import { useSession } from '../../context/AuthContext';
 import { hello } from '../../modules/read-sms';
-import addTokenInterceptor from '../../utils/interceptors';
+import { addTokenInterceptor, removeRequestInterceptor } from '../../utils/interceptors';
 
 export default function AppLayout() {
   const { isLoading, session, signOut } = useSession();
@@ -19,7 +18,7 @@ export default function AppLayout() {
       async (error) => {
         const { status } = error.response || {};
         if (status === 401) {
-          await signOut?.();
+          signOut?.();
         }
         return Promise.reject(error);
       }
@@ -30,6 +29,9 @@ export default function AppLayout() {
     if (session) {
       addTokenInterceptor(session);
     }
+    return () => {
+      removeRequestInterceptor();
+    };
   }, [session]);
 
   if (isLoading) {

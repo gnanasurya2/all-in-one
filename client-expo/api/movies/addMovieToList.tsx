@@ -23,29 +23,7 @@ export const useAddMovieToList = () => {
   const query = useMutation({
     mutationFn: addMovieToList,
     onSuccess: (_, request) => {
-      queryClient.setQueryData<InfiniteData<GetMovieListsResponse>>(
-        ['getMovieLists'],
-        (oldData) => {
-          const newData = oldData?.pages.map((page) => {
-            page.response = page.response.map((item) => {
-              if (request.list_ids.includes(item.data.list_id)) {
-                return {
-                  ...item,
-                  posters: [{ url: request.poster, imdb_id: request.imdb_id }, ...item.posters],
-                };
-              } else {
-                return item;
-              }
-            });
-            return page;
-          });
-          if (oldData?.pages) {
-            oldData.pages = newData || [];
-          }
-
-          return oldData;
-        }
-      );
+      queryClient.invalidateQueries(['getMoviesForLists', request.list_ids]);
     },
   });
   return query;

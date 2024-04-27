@@ -78,7 +78,7 @@ const RandomMovieSeletorScreen = () => {
                 poster={item.poster}
                 key={item.imdb_id}
                 onPressHandler={() => {
-                  router.navigate({
+                  router.push({
                     pathname: '/(app)/movies/movie',
                     params: {
                       id: item.imdb_id,

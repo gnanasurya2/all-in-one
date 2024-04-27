@@ -1,7 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Pressable, TextInput } from 'react-native';
-import { AuthenticationStackParamList } from '../Navigation/Authentication/AuthenticationNavigator';
 import Text from '../components/Text';
 import { SURFACE_COLORS, TEXT_COLORS } from '../constants/styles';
 import { useForm, Controller } from 'react-hook-form';
@@ -37,9 +36,7 @@ const SignUp = () => {
     try {
       await createAccount?.({ ...data });
       router.replace('/');
-    } catch (err) {
-      console.log('error', err);
-    }
+    } catch (err) {}
 
     setIsLoading(false);
   };

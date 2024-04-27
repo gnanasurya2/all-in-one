@@ -2,11 +2,13 @@ mod database;
 mod routes;
 mod utils;
 
+use log::info;
 use routes::create_routes;
 use sea_orm::Database;
 use tokio::net::TcpListener;
 
 pub async fn run(database_url: &str) {
+    info!("database url {}", database_url);
     let database = Database::connect(database_url).await.unwrap();
 
     let app = create_routes(database);

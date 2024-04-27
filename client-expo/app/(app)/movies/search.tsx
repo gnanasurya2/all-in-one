@@ -41,7 +41,7 @@ const SearchScreen = () => {
               {...item}
               onPressHandler={(id, type) => {
                 setSearchText('');
-                router.navigate({
+                router.push({
                   pathname: '/(app)/movies/movie',
                   params: {
                     id,

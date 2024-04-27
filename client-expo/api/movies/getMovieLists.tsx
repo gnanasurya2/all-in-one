@@ -6,15 +6,10 @@ export interface GetMovieListsRequest {
 }
 
 export type MovieList = {
-  data: {
-    list_id: number;
-    list_name: string;
-    description: string;
-  };
-  posters: Array<{
-    url: string;
-    imdb_id: string;
-  }>;
+  id: number;
+  title: string;
+  description: string;
+  number_of_items: number;
 };
 
 export interface GetMovieListsResponse {

@@ -1,12 +1,12 @@
 use crate::{
     database::{
-        movie_lists::{self, ActiveModel},
+        movie_lists::{self, ActiveModel, Column},
         prelude::MovieLists,
     },
     utils::app_error::AppError,
 };
 use axum::{http::StatusCode, Extension, Json};
-use sea_orm::{DatabaseConnection, EntityTrait, Set};
+use sea_orm::{sea_query::OnConflict, DatabaseConnection, EntityTrait, Set};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -38,9 +38,15 @@ pub async fn add_movie_to_lists(
         .collect::<Vec<ActiveModel>>();
 
     MovieLists::insert_many(movie_lists_model)
+        .on_conflict(
+            OnConflict::columns([Column::ListId, Column::ImdbId])
+                .update_column(Column::Title)
+                .to_owned(),
+        )
         .exec(&database)
         .await
-        .map_err(|_| {
+        .map_err(|err| {
+            print!("err {:?}", err);
             AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "error while adding to db",
