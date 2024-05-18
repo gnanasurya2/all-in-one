@@ -1,3 +1,4 @@
+mod backup;
 mod expense_tracker;
 mod guard;
 mod hello_world;
@@ -11,6 +12,7 @@ use reqwest::Client;
 use sea_orm::DatabaseConnection;
 use tower_http::cors::{Any, CorsLayer};
 
+use backup::trigger_backup::trigger_backup;
 use expense_tracker::get_tracked_expense::get_tracked_expense;
 use guard::guard;
 use hello_world::hello_world;
@@ -29,12 +31,14 @@ use users::create_users;
 use users::login;
 use users::logout;
 
+use crate::services::r2::R2Store;
+
 #[derive(Clone)]
 pub struct SharedData {
     pub message: String,
 }
 
-pub fn create_routes(database: DatabaseConnection) -> Router {
+pub fn create_routes(database: DatabaseConnection, r2_store: R2Store) -> Router {
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::PATCH])
         .allow_origin(Any);
@@ -42,6 +46,8 @@ pub fn create_routes(database: DatabaseConnection) -> Router {
     let client = Client::new();
 
     Router::new()
+        .route("/backup/trigger", post(trigger_backup))
+        .layer(Extension(r2_store))
         .route("/movies/get", get(get_movies))
         .route("/movies/search", get(search_movies))
         .route("/movies/add_watched", post(add_watched_movie))

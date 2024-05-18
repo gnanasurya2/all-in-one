@@ -1,11 +1,16 @@
 ########################################################################################################################
-# server build stage
+# Build Stage
 ########################################################################################################################
 ARG RUST_VERSION=1.75.0
 
 FROM rust:${RUST_VERSION}-alpine AS build
 
-RUN apk add libc-dev openssl-dev openssl-libs-static
+RUN apk add --no-cache \
+    musl-dev \
+    libc-dev \
+    openssl-dev \
+    openssl-libs-static
+
 RUN rustup target add x86_64-unknown-linux-musl
 
 COPY ./src ./src
@@ -26,18 +31,24 @@ ENV SQLX_OFFLINE true
 RUN cargo build --target x86_64-unknown-linux-musl --release
 
 ########################################################################################################################
-# server image
+# Final Image Stage
 ########################################################################################################################
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates \
+    mysql-client  # Installs mysql-client package which includes mysqldump
 
 COPY --from=build /etc/passwd /etc/passwd
 COPY --from=build /etc/group /etc/group
 
-COPY --from=build --chown=server:server ./target/x86_64-unknown-linux-musl/release/server /app/server
+COPY --from=build --chown=server:server /target/x86_64-unknown-linux-musl/release/server /app/server
 
 USER server:server
 
-ENTRYPOINT ["./app/server"]
+# Change ownership of /app directory
+USER root
+RUN chown -R server:server /app
+USER server
+
+ENTRYPOINT ["/app/server"]

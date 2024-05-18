@@ -12,13 +12,21 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
   server:
-    image: server:1.4
+    image: server:1.5
     container_name: server
     hostname: server
     environment:
       - OMDB_API_KEY=${OMDB_API_KEY}
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
+      - BACKUP_PATH=${BACKUP_PATH}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME}
     ports:
       - 1540:1540
     depends_on:
@@ -26,6 +34,7 @@ services:
         condition: service_healthy
     dns:
       - 8.8.8.8
+    command: ["sh", "-c", "exec tail -f /dev/null"]
   db:
     image: mysql:8.0.27
     container_name: database
