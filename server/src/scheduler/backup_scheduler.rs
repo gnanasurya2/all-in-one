@@ -1,6 +1,6 @@
 use std::{env, fs, process::Command};
 
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use log::{error, info};
 use tokio_cron_scheduler::{Job, JobScheduler, JobSchedulerError};
 
@@ -9,23 +9,31 @@ pub async fn backup_scheduler(r2_store: &R2Store) -> Result<(), JobSchedulerErro
     let sched: JobScheduler = JobScheduler::new().await?;
     let r2_store = r2_store.clone();
     sched
-        .add(Job::new_async("0 0 5 * * *", move |uuid, mut l| {
-            let r2_store = r2_store.clone();
-            Box::pin(async move {
-                println!("running database backup at {}", Utc::now());
-                backup_db(r2_store).await;
+        .add(Job::new_async_tz(
+            "0 0 5 * * *",
+            chrono_tz::Asia::Kolkata,
+            move |uuid, mut l| {
+                let r2_store = r2_store.clone();
+                Box::pin(async move {
+                    println!("running database backup at {}", Utc::now());
+                    backup_db(r2_store).await;
 
-                let next_tick = l.next_tick_for_job(uuid).await;
-                match next_tick {
-                    Ok(Some(ts)) => info!("next execution timestamp is {:?}", ts),
-                    _ => info!("couldn't get the next timestamp"),
-                }
-            })
-        })?)
+                    let next_tick = l.next_tick_for_job(uuid).await;
+                    match next_tick {
+                        Ok(Some(ts)) => info!("next execution timestamp is {:?}", ts),
+                        _ => info!("couldn't get the next timestamp"),
+                    }
+                })
+            },
+        )?)
         .await?;
 
     sched.start().await?;
     Ok(())
+}
+
+fn back_up_db_filname(date: DateTime<Utc>) -> String {
+    format!("db_backup_{}.sql", date.format("%Y-%m-%d"))
 }
 
 pub async fn backup_db(r2_store: R2Store) {
@@ -34,7 +42,7 @@ pub async fn backup_db(r2_store: R2Store) {
     let db_name = env::var("MYSQL_DATABASE").unwrap();
     let db_host = env::var("MYSQL_HOST").unwrap();
 
-    let file_name = format!("db_backup_{}.sql", Utc::now().timestamp());
+    let file_name = back_up_db_filname(Utc::now());
     let final_path = format!("{}/{}", base_path, file_name);
     let output = Command::new("mysqldump")
         .arg("-u")
