@@ -3,15 +3,11 @@ import { getMovieResponse, useGetMovies } from '@api/movies/getMovies';
 import { useUpdateTrackedMovie } from '@api/movies/updateWatchedMovie';
 import CustomButton from '@components/Button';
 import Loader from '@components/Loader';
-import PosterImage from '@components/PosterImage';
-import ShowMore from '@components/ShowMoreComponent';
 import StarRating from '@components/StarRating';
 import Text from '@components/Text';
 import {
   BORDERS_COLORS,
-  FONT_FAMILY,
   FONT_SIZE,
-  FONT_WEIGHT,
   GRADIENT_COLORS,
   SURFACE_COLORS,
   TEXT_COLORS,
@@ -25,6 +21,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { movieStartTime } from '../../../utils/movieStartTime';
+import { ContentType } from '@constants/enums';
+import ContentDetails from '@components/ContentDetails';
+import SeriesSections from '@components/SeriesSections';
 
 type datePickerMode = 'date' | 'time';
 
@@ -35,9 +34,9 @@ const MovieScreen = () => {
   const [rewatch, setRewatch] = useState(false);
   const [watchDate, setWatchedDate] = useState(new Date());
   const [starRating, setStarRating] = useState(0);
-  const { id: movieId = '', type = '' } = useLocalSearchParams<{
+  const { id: movieId = '', type = ContentType.Movies } = useLocalSearchParams<{
     id: string;
-    type: string;
+    type: ContentType;
   }>();
   const { data, isLoading } = useGetMovies({ id: movieId, type });
 
@@ -62,6 +61,7 @@ const MovieScreen = () => {
 
   useEffect(() => {
     if (data) {
+      console.log('data', data);
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
@@ -117,180 +117,171 @@ const MovieScreen = () => {
         <View style={styles.wrapper}>
           {data ? (
             <>
-              <View style={styles.header}>
-                <View style={styles.titleWrapper}>
-                  <Text style={styles.title}>{data.Title}</Text>
-                  <View style={styles.metaDataWrapper}>
-                    <Text style={styles.directedByTitle}>DIRECTED BY</Text>
-                    <Text style={styles.directorText}>{data.Director}</Text>
-                    <Text>
-                      {data.Year} {data.Runtime}
-                    </Text>
-                  </View>
-                </View>
-                <PosterImage url={data.Poster} width={100} height={148} />
-              </View>
-              <View style={styles.genreWrapper}>
-                {data.Genre.map((item) => (
-                  <View key={item} style={styles.genre}>
-                    <Text>{item}</Text>
-                  </View>
-                ))}
-              </View>
-              <ShowMore textLimit={250} style={styles.plotText}>
-                {data.Plot}
-              </ShowMore>
-              <Text>{data.Actors.join(',  ')}</Text>
-
-              <Text style={styles.ratingText}>Rating {data.imdbRating}</Text>
-              <CustomButton
-                onPress={handlePresentModalPress}
-                style={styles.reviewButton}
-                title="Rate, review, log"
-                startIcon="user-circle-o"
-                endIcon="ellipsis-h"
-                endIconStyle={styles.endIconStyle}
-              />
-
-              <BottomSheetModalProvider>
-                <View style={styles.container}>
-                  <BottomSheetModal
-                    ref={bottomSheetModalRef}
-                    index={0}
-                    snapPoints={[500]}
-                    handleIndicatorStyle={{
-                      backgroundColor: 'white',
-                    }}
-                    handleStyle={styles.handleStyle}
-                  >
-                    <View style={styles.contentContainer}>
-                      <View style={styles.titleContainer}>
-                        <Text style={styles.modalTitle}>{data.Title}</Text>
-                        <Text style={styles.modalSubTitle}>{data.Year}</Text>
-                      </View>
-                      <View style={styles.iconsContainer}>
-                        <View style={styles.iconTextWrapper}>
-                          <Ionicons
-                            name={watched ? 'eye-sharp' : 'eye-outline'}
-                            size={60}
-                            color={watched ? SURFACE_COLORS.SUCCESS : SURFACE_COLORS.BACKDROP}
-                            onPress={() => setWatched((prev) => !prev)}
-                          />
-                          <Text style={styles.iconText}>{watched ? 'Watched' : 'Watch'}</Text>
-                        </View>
-                        <View style={styles.iconTextWrapper}>
-                          <Ionicons
-                            name={liked ? 'heart' : 'heart-outline'}
-                            size={60}
-                            color={liked ? SURFACE_COLORS.WARNING : SURFACE_COLORS.BACKDROP}
-                            onPress={() => setLiked((prev) => !prev)}
-                          />
-                          <Text style={styles.iconText}>{liked ? 'Liked' : 'Like'}</Text>
-                        </View>
-                        {!data.watched ? (
-                          <View style={styles.iconTextWrapper}>
-                            <MaterialCommunityIcons
-                              name={watchList ? 'clock-minus' : 'clock-plus-outline'}
-                              size={60}
-                              color={
-                                watchList ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP
-                              }
-                              onPress={() => setWatchList((prev) => !prev)}
-                            />
-                            <Text style={styles.iconText}>Watchlist</Text>
-                          </View>
-                        ) : (
-                          <View style={styles.iconTextWrapper}>
-                            <MaterialCommunityIcons
-                              name={'repeat'}
-                              size={60}
-                              color={rewatch ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP}
-                              onPress={() => setRewatch((prev) => !prev)}
-                            />
-                            <Text style={styles.iconText}>Rewatch</Text>
-                          </View>
-                        )}
-                      </View>
-                      <StarRating onChange={(value) => setStarRating(value)} value={starRating} />
-                      <View style={styles.dateTimeWrapper}>
-                        <Text style={styles.dateTimeText}>Date</Text>
-                        <View style={styles.dateTimePressableWrapper}>
-                          <Pressable onPress={() => showMode('date')} style={styles.datePressable}>
-                            <Text style={styles.dateText}>
-                              {watchDate.toLocaleDateString('en-IN', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                              })}
-                            </Text>
-                          </Pressable>
-                          <Pressable onPress={() => showMode('time')} style={styles.datePressable}>
-                            <Text style={styles.dateText}>
-                              {watchDate.toLocaleTimeString('en-IN', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </Text>
-                          </Pressable>
-                        </View>
-                      </View>
-                      <Pressable
-                        style={styles.listWrapper}
-                        onPress={() => {
-                          router.push({
-                            pathname: '/(app)/movies/viewLists',
-                            params: {
-                              imdbId: movieId,
-                              title: data.Title,
-                              poster: data.Poster,
-                            },
-                          });
+              <ContentDetails data={data} />
+              {data.Type === ContentType.Series ? (
+                <SeriesSections numberOfSeasons={data.NumberOfSeasons} imdbId={movieId} />
+              ) : (
+                <>
+                  <CustomButton
+                    onPress={handlePresentModalPress}
+                    style={styles.reviewButton}
+                    title="Rate, review, log"
+                    startIcon="user-circle-o"
+                    endIcon="ellipsis-h"
+                    endIconStyle={styles.endIconStyle}
+                  />
+                  <BottomSheetModalProvider>
+                    <View style={styles.container}>
+                      <BottomSheetModal
+                        ref={bottomSheetModalRef}
+                        index={0}
+                        snapPoints={[500]}
+                        handleIndicatorStyle={{
+                          backgroundColor: 'white',
                         }}
+                        handleStyle={styles.handleStyle}
                       >
-                        <MaterialIcons name="add" color={TEXT_COLORS.BODY_L2} size={24} />
-                        <Text style={styles.listText}>Add to lists</Text>
-                      </Pressable>
-                      <CustomButton
-                        title={data.isLogged ? 'update' : 'save'}
-                        style={styles.saveButton}
-                        isLoading={isFetching}
-                        disabled={isFetching}
-                        onPress={async () => {
-                          if (data.isLogged && !rewatch) {
-                            mutate({
-                              id: data.tracked_id,
-                              imdb_id: movieId,
-                              liked,
-                              watched,
-                              rating: starRating,
-                              watch_list: watchList,
-                              watched_date: watchDate.toISOString(),
-                              title: data.Title,
-                              type,
-                            });
-                          } else {
-                            const response = await refetch();
+                        <View style={styles.contentContainer}>
+                          <View style={styles.titleContainer}>
+                            <Text style={styles.modalTitle}>{data.Title}</Text>
+                            <Text style={styles.modalSubTitle}>{data.Year}</Text>
+                          </View>
+                          <View style={styles.iconsContainer}>
+                            <View style={styles.iconTextWrapper}>
+                              <Ionicons
+                                name={watched ? 'eye-sharp' : 'eye-outline'}
+                                size={60}
+                                color={watched ? SURFACE_COLORS.SUCCESS : SURFACE_COLORS.BACKDROP}
+                                onPress={() => setWatched((prev) => !prev)}
+                              />
+                              <Text style={styles.iconText}>{watched ? 'Watched' : 'Watch'}</Text>
+                            </View>
+                            <View style={styles.iconTextWrapper}>
+                              <Ionicons
+                                name={liked ? 'heart' : 'heart-outline'}
+                                size={60}
+                                color={liked ? SURFACE_COLORS.WARNING : SURFACE_COLORS.BACKDROP}
+                                onPress={() => setLiked((prev) => !prev)}
+                              />
+                              <Text style={styles.iconText}>{liked ? 'Liked' : 'Like'}</Text>
+                            </View>
+                            {!data.watched ? (
+                              <View style={styles.iconTextWrapper}>
+                                <MaterialCommunityIcons
+                                  name={watchList ? 'clock-minus' : 'clock-plus-outline'}
+                                  size={60}
+                                  color={
+                                    watchList ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP
+                                  }
+                                  onPress={() => setWatchList((prev) => !prev)}
+                                />
+                                <Text style={styles.iconText}>Watchlist</Text>
+                              </View>
+                            ) : (
+                              <View style={styles.iconTextWrapper}>
+                                <MaterialCommunityIcons
+                                  name={'repeat'}
+                                  size={60}
+                                  color={
+                                    rewatch ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP
+                                  }
+                                  onPress={() => setRewatch((prev) => !prev)}
+                                />
+                                <Text style={styles.iconText}>Rewatch</Text>
+                              </View>
+                            )}
+                          </View>
+                          <StarRating
+                            onChange={(value) => setStarRating(value)}
+                            value={starRating}
+                          />
+                          <View style={styles.dateTimeWrapper}>
+                            <Text style={styles.dateTimeText}>Date</Text>
+                            <View style={styles.dateTimePressableWrapper}>
+                              <Pressable
+                                onPress={() => showMode('date')}
+                                style={styles.datePressable}
+                              >
+                                <Text style={styles.dateText}>
+                                  {watchDate.toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                  })}
+                                </Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() => showMode('time')}
+                                style={styles.datePressable}
+                              >
+                                <Text style={styles.dateText}>
+                                  {watchDate.toLocaleTimeString('en-IN', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                          <Pressable
+                            style={styles.listWrapper}
+                            onPress={() => {
+                              router.push({
+                                pathname: '/(app)/movies/viewLists',
+                                params: {
+                                  imdbId: movieId,
+                                  title: data.Title,
+                                  poster: data.Poster,
+                                },
+                              });
+                            }}
+                          >
+                            <MaterialIcons name="add" color={TEXT_COLORS.BODY_L2} size={24} />
+                            <Text style={styles.listText}>Add to lists</Text>
+                          </Pressable>
+                          <CustomButton
+                            title={data.isLogged ? 'update' : 'save'}
+                            style={styles.saveButton}
+                            isLoading={isFetching}
+                            disabled={isFetching}
+                            onPress={async () => {
+                              if (data.isLogged && !rewatch) {
+                                mutate({
+                                  id: data.tracked_id,
+                                  imdb_id: movieId,
+                                  liked,
+                                  watched,
+                                  rating: starRating,
+                                  watch_list: watchList,
+                                  watched_date: watchDate.toISOString(),
+                                  title: data.Title,
+                                  type,
+                                });
+                              } else {
+                                const response = await refetch();
 
-                            if (response.data?.id) {
-                              queryClient.setQueryData<getMovieResponse>(
-                                ['getMovie', movieId, type],
-                                (oldData) =>
-                                  oldData
-                                    ? {
-                                        ...oldData,
-                                        ...response.data,
-                                        isLogged: true,
-                                      }
-                                    : oldData
-                              );
-                            }
-                          }
-                        }}
-                      />
+                                if (response.data?.id) {
+                                  queryClient.setQueryData<getMovieResponse>(
+                                    ['getMovie', movieId, type],
+                                    (oldData) =>
+                                      oldData
+                                        ? {
+                                            ...oldData,
+                                            ...response.data,
+                                            isLogged: true,
+                                          }
+                                        : oldData
+                                  );
+                                }
+                              }
+                            }}
+                          />
+                        </View>
+                      </BottomSheetModal>
                     </View>
-                  </BottomSheetModal>
-                </View>
-              </BottomSheetModalProvider>
+                  </BottomSheetModalProvider>
+                </>
+              )}
             </>
           ) : (
             <Loader />
@@ -326,41 +317,6 @@ const styles = StyleSheet.create({
   gradient: {
     width: '100%',
     height: 200,
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: 24,
-  },
-  titleWrapper: {
-    flex: 1,
-  },
-  title: {
-    fontSize: FONT_SIZE.H1,
-    color: TEXT_COLORS.HEADING,
-    fontFamily: FONT_FAMILY.HELVETICA_ROUNDED,
-    textTransform: 'capitalize',
-  },
-  metaDataWrapper: {
-    justifyContent: 'center',
-    flex: 1,
-  },
-  directedByTitle: {
-    fontSize: FONT_SIZE.H5,
-    marginBottom: 4,
-    fontWeight: FONT_WEIGHT.LIGHT,
-  },
-  directorText: {
-    fontSize: FONT_SIZE.H5,
-    fontWeight: FONT_WEIGHT.BOLD,
-  },
-  plotText: {
-    marginVertical: 8,
-    fontSize: FONT_SIZE.H4,
-    color: TEXT_COLORS.BODY_L2,
-  },
-  ratingText: {
-    fontSize: 40,
   },
   reviewButton: {
     width: '100%',
@@ -450,17 +406,6 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.BODY_L2,
     marginLeft: 4,
     fontSize: 16,
-  },
-  genreWrapper: {
-    flexDirection: 'row',
-    marginVertical: 16,
-  },
-  genre: {
-    backgroundColor: SURFACE_COLORS.BRIGHT_ORANGE,
-    marginHorizontal: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
   },
 });
 

@@ -5,9 +5,10 @@ import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '../../constants/sty
 import PosterImage from '../PosterImage';
 import Text from '../Text';
 import { MovieData } from '../../app/(app)/movies';
+import { ContentType } from '@constants/enums';
 
 type ITrackedMovieProps = MovieData & {
-  onPressHandler: (id: string) => void;
+  onPressHandler: (id: string, type: ContentType) => void;
 };
 const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
   if (props.header) {
@@ -31,7 +32,7 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
   }, [props.rating]);
 
   return (
-    <Pressable onPress={() => onPressHandler(props.id)}>
+    <Pressable onPress={() => onPressHandler(props.id, props.type)}>
       <View style={styles.wrapper}>
         <View style={styles.dayView}>
           <Text style={styles.dayText}>{props.day}</Text>

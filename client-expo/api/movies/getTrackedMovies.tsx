@@ -1,3 +1,4 @@
+import { ContentType } from '@constants/enums';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -15,6 +16,7 @@ export interface TrackedMovie {
   title: string;
   liked: boolean;
   rewatch: boolean;
+  type: ContentType;
 }
 
 export interface getTrackedMoviesResponse {
