@@ -24,6 +24,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { movieStartTime } from '../../../utils/movieStartTime';
 
 type datePickerMode = 'date' | 'time';
 
@@ -31,9 +32,10 @@ const MovieScreen = () => {
   const [watched, setWatched] = useState(false);
   const [liked, setLiked] = useState(false);
   const [watchList, setWatchList] = useState(false);
+  const [rewatch, setRewatch] = useState(false);
   const [watchDate, setWatchedDate] = useState(new Date());
   const [starRating, setStarRating] = useState(0);
-  const { id: movieId = '', type = 'movie' } = useLocalSearchParams<{
+  const { id: movieId = '', type = '' } = useLocalSearchParams<{
     id: string;
     type: string;
   }>();
@@ -49,6 +51,7 @@ const MovieScreen = () => {
     liked,
     watch_list: watchList,
     watched,
+    rewatch,
     watched_date: watchDate.toISOString(),
     rating: starRating,
     year: parseInt(data?.Year || '0'),
@@ -62,7 +65,7 @@ const MovieScreen = () => {
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
-      setWatchedDate(new Date(data.watched_date ?? new Date()));
+      setWatchedDate(new Date(data.watched_date ?? movieStartTime(data.Runtime)));
       setWatchList(data.watch_list ?? false);
     }
   }, [data]);
@@ -184,15 +187,29 @@ const MovieScreen = () => {
                           />
                           <Text style={styles.iconText}>{liked ? 'Liked' : 'Like'}</Text>
                         </View>
-                        <View style={styles.iconTextWrapper}>
-                          <MaterialCommunityIcons
-                            name={watchList ? 'clock-minus' : 'clock-plus-outline'}
-                            size={60}
-                            color={watchList ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP}
-                            onPress={() => setWatchList((prev) => !prev)}
-                          />
-                          <Text style={styles.iconText}>Watchlist</Text>
-                        </View>
+                        {!data.watched ? (
+                          <View style={styles.iconTextWrapper}>
+                            <MaterialCommunityIcons
+                              name={watchList ? 'clock-minus' : 'clock-plus-outline'}
+                              size={60}
+                              color={
+                                watchList ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP
+                              }
+                              onPress={() => setWatchList((prev) => !prev)}
+                            />
+                            <Text style={styles.iconText}>Watchlist</Text>
+                          </View>
+                        ) : (
+                          <View style={styles.iconTextWrapper}>
+                            <MaterialCommunityIcons
+                              name={'repeat'}
+                              size={60}
+                              color={rewatch ? SURFACE_COLORS.INFORMATION : SURFACE_COLORS.BACKDROP}
+                              onPress={() => setRewatch((prev) => !prev)}
+                            />
+                            <Text style={styles.iconText}>Rewatch</Text>
+                          </View>
+                        )}
                       </View>
                       <StarRating onChange={(value) => setStarRating(value)} value={starRating} />
                       <View style={styles.dateTimeWrapper}>
@@ -239,7 +256,7 @@ const MovieScreen = () => {
                         isLoading={isFetching}
                         disabled={isFetching}
                         onPress={async () => {
-                          if (data.isLogged) {
+                          if (data.isLogged && !rewatch) {
                             mutate({
                               id: data.tracked_id,
                               imdb_id: movieId,

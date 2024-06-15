@@ -19,6 +19,7 @@ export interface addTrackedMovieRequest {
   rating: number;
   watch_list: boolean;
   watched_date: string;
+  rewatch?: boolean;
   poster: string;
   year: number;
   title: string;
