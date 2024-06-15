@@ -31,6 +31,7 @@ pub struct QueryResultTrackedMovie {
     title: String,
     liked: Option<i8>,
     rewatch: Option<i8>,
+    r#type: String,
 }
 
 #[derive(FromQueryResult, Serialize, Deserialize)]
@@ -43,6 +44,7 @@ pub struct ResponseTrackedMovie {
     title: String,
     liked: bool,
     rewatch: bool,
+    r#type: String,
 }
 
 #[derive(Serialize)]
@@ -68,6 +70,7 @@ pub async fn get_watched_movies(
             movies::Column::Title,
             movies::Column::Liked,
             movies::Column::Rewatch,
+            movies::Column::Type,
         ])
         .filter(movies::Column::UserId.eq(user.id))
         .filter(movies::Column::Watched.eq(1))
@@ -90,6 +93,7 @@ pub async fn get_watched_movies(
             title: db_movie.title,
             liked: i8_to_bool(db_movie.liked),
             rewatch: i8_to_bool(db_movie.rewatch),
+            r#type: db_movie.r#type,
         })
         .collect();
 

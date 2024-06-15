@@ -1,9 +1,10 @@
 use axum::{extract::Query, http::StatusCode, Extension, Json};
+use itertools::Itertools;
+use log::info;
 use reqwest::Client;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::error::Error;
 
 use crate::database::{movies, prelude::Movies};
 use crate::routes::guard::AuthData;
@@ -42,7 +43,29 @@ pub struct OmdbResponse {
     Runtime: String,
     Year: String,
 }
-
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize)]
+pub struct OmdbSeriesResponse {
+    Title: String,
+    Year: String,
+    Rated: String,
+    Released: String,
+    Runtime: String,
+    Genre: String,
+    Director: String,
+    Writer: String,
+    Actors: String,
+    Plot: String,
+    Language: String,
+    Country: String,
+    Awards: String,
+    Poster: String,
+    Metascore: String,
+    imdbRating: String,
+    imdbID: String,
+    Type: String,
+    totalSeasons: String,
+}
 #[derive(Serialize, Deserialize)]
 pub struct QueryParams {
     id: String,
@@ -54,14 +77,14 @@ pub struct QueryParams {
 pub struct GetMoviesApiResponse {
     Actors: Vec<String>,
     Awards: String,
-    BoxOffice: String,
+    BoxOffice: Option<String>,
     Country: String,
     Director: String,
     Genre: Vec<String>,
     Language: String,
     Plot: String,
     Poster: String,
-    Production: String,
+    Production: Option<String>,
     Rated: String,
     Released: String,
     imdbID: String,
@@ -70,6 +93,8 @@ pub struct GetMoviesApiResponse {
     Title: String,
     Runtime: String,
     Year: String,
+    NumberOfSeasons: Option<String>,
+    Writer: Option<String>,
     liked: Option<bool>,
     watched: Option<bool>,
     watch_list: Option<bool>,
@@ -92,7 +117,7 @@ pub async fn get_movies(
         api_key, query.id, query.r#type
     );
 
-    println!("{}", request_url);
+    info!("{}, {:?},{:?}", request_url, query.id, user.id);
 
     let response = client
         .get(request_url)
@@ -107,73 +132,141 @@ pub async fn get_movies(
         )
     })?;
 
-    match serde_json::from_str::<OmdbResponse>(body.as_str()) {
-        Ok(response) => {
-            let formatted_genre = response
-                .Genre
-                .split(",")
-                .map(|s| s.trim().to_string())
-                .collect();
-            let formatter_actors = response
-                .Actors
-                .split(",")
-                .map(|s| s.trim().to_string())
-                .collect();
+    match query.r#type.as_str() {
+        "movie" => match serde_json::from_str::<OmdbResponse>(body.as_str()) {
+            Ok(response) => {
+                let formatted_genre = format_comma_separated_strings(response.Genre);
+                let formatter_actors = format_comma_separated_strings(response.Actors);
 
-            let watched_data = Movies::find()
-                .filter(movies::Column::UserId.eq(user.id))
-                .filter(movies::Column::ImdbId.eq(query.id))
-                .one(&database)
-                .await
-                .map_err(|_| {
-                    AppError::new(
-                        StatusCode::INTERNAL_SERVER_ERROR,
-                        "Error while retriving data",
-                    )
-                })?;
+                let watched_data = Movies::find()
+                    .filter(movies::Column::UserId.eq(user.id))
+                    .filter(movies::Column::ImdbId.eq(query.id))
+                    .one(&database)
+                    .await
+                    .map_err(|_| {
+                        AppError::new(
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            "Error while retriving data",
+                        )
+                    })?;
+                let mut final_response = GetMoviesApiResponse {
+                    Actors: formatter_actors,
+                    Awards: response.Awards,
+                    BoxOffice: Some(response.BoxOffice),
+                    Country: response.Country,
+                    Director: response.Director,
+                    Genre: formatted_genre,
+                    Language: response.Language,
+                    Plot: response.Plot,
+                    Production: Some(response.Production),
+                    Poster: response.Poster,
+                    Rated: response.Rated,
+                    Released: response.Released,
+                    imdbID: response.imdbID,
+                    Type: response.Type,
+                    imdbRating: response.imdbRating,
+                    Title: response.Title,
+                    Runtime: response.Runtime,
+                    Year: response.Year,
+                    NumberOfSeasons: None,
+                    Writer: None,
+                    liked: None,
+                    watched: None,
+                    watch_list: None,
+                    rating: None,
+                    watched_date: None,
+                    isLogged: false,
+                    tracked_id: None,
+                };
 
-            let mut final_response = GetMoviesApiResponse {
-                Actors: formatter_actors,
-                Awards: response.Awards,
-                BoxOffice: response.BoxOffice,
-                Country: response.Country,
-                Director: response.Director,
-                Genre: formatted_genre,
-                Language: response.Language,
-                Plot: response.Plot,
-                Production: response.Production,
-                Poster: response.Poster,
-                Rated: response.Rated,
-                Released: response.Released,
-                imdbID: response.imdbID,
-                Type: response.Type,
-                imdbRating: response.imdbRating,
-                Title: response.Title,
-                Runtime: response.Runtime,
-                Year: response.Year,
-                liked: None,
-                watched: None,
-                watch_list: None,
-                rating: None,
-                watched_date: None,
-                isLogged: false,
-                tracked_id: None,
-            };
-
-            if let Some(watched_data) = watched_data {
-                final_response.liked = Some(i8_to_bool(watched_data.liked));
-                final_response.watched = Some(i8_to_bool(watched_data.watched));
-                final_response.watch_list = Some(i8_to_bool(watched_data.watch_list));
-                final_response.watched_date = Some(format_date(watched_data.watched_date));
-                final_response.rating = Some(watched_data.rating);
-                final_response.isLogged = true;
-                final_response.tracked_id = Some(watched_data.id);
+                if let Some(watched_data) = watched_data {
+                    final_response.liked = Some(i8_to_bool(watched_data.liked));
+                    final_response.watched = Some(i8_to_bool(watched_data.watched));
+                    final_response.watch_list = Some(i8_to_bool(watched_data.watch_list));
+                    final_response.watched_date = Some(format_date(watched_data.watched_date));
+                    final_response.rating = Some(watched_data.rating);
+                    final_response.isLogged = true;
+                    final_response.tracked_id = Some(watched_data.id);
+                }
+                Ok(Json(final_response))
             }
-            Ok(Json(final_response))
+            Err(_) => Err(AppError::new(
+                StatusCode::EXPECTATION_FAILED,
+                "Error while parsing the json",
+            )),
+        },
+        "series" => match serde_json::from_str::<OmdbSeriesResponse>(body.as_str()) {
+            Ok(response) => {
+                let formatted_genre = format_comma_separated_strings(response.Genre);
+                let formatter_actors = format_comma_separated_strings(response.Actors);
+
+                let watched_data = Movies::find()
+                    .filter(movies::Column::UserId.eq(user.id))
+                    .filter(movies::Column::ImdbId.eq(query.id))
+                    .one(&database)
+                    .await
+                    .map_err(|_| {
+                        AppError::new(
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            "Error while retriving data",
+                        )
+                    })?;
+
+                let mut final_response = GetMoviesApiResponse {
+                    Actors: formatter_actors,
+                    Awards: response.Awards,
+                    Country: response.Country,
+                    BoxOffice: None,
+                    Director: response.Director,
+                    Genre: formatted_genre,
+                    Language: response.Language,
+                    Production: None,
+                    Plot: response.Plot,
+                    Poster: response.Poster,
+                    Rated: response.Rated,
+                    Released: response.Released,
+                    imdbID: response.imdbID,
+                    Type: response.Type,
+                    imdbRating: response.imdbRating,
+                    Title: response.Title,
+                    Runtime: response.Runtime,
+                    Year: response.Year,
+                    NumberOfSeasons: Some(response.totalSeasons),
+                    Writer: Some(response.Writer),
+                    liked: None,
+                    watched: None,
+                    watch_list: None,
+                    rating: None,
+                    watched_date: None,
+                    isLogged: false,
+                    tracked_id: None,
+                };
+
+                if let Some(watched_data) = watched_data {
+                    final_response.liked = Some(i8_to_bool(watched_data.liked));
+                    final_response.watched = Some(i8_to_bool(watched_data.watched));
+                    final_response.watch_list = Some(i8_to_bool(watched_data.watch_list));
+                    final_response.watched_date = Some(format_date(watched_data.watched_date));
+                    final_response.rating = Some(watched_data.rating);
+                    final_response.isLogged = true;
+                    final_response.tracked_id = Some(watched_data.id);
+                }
+                Ok(Json(final_response))
+            }
+            Err(_) => Err(AppError::new(
+                StatusCode::EXPECTATION_FAILED,
+                "Error while parsing the json",
+            )),
+        },
+        _ => {
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Invalid type",
+            ))
         }
-        Err(_) => Err(AppError::new(
-            StatusCode::EXPECTATION_FAILED,
-            "Error while parsing the json",
-        )),
     }
+}
+
+fn format_comma_separated_strings(str: String) -> Vec<String> {
+    str.split(",").map(|s| s.trim().to_string()).collect_vec()
 }

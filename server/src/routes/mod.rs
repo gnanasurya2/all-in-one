@@ -22,6 +22,7 @@ use movies_tracker::add_watched_movies::add_watched_movie;
 use movies_tracker::get_movie_list::get_movie_list;
 use movies_tracker::get_movie_lists::get_movie_lists;
 use movies_tracker::get_movies::get_movies;
+use movies_tracker::get_season_details::get_season_details;
 use movies_tracker::get_watched_movies::get_watched_movies;
 use movies_tracker::get_watchlist_movies::get_watchlist_movies;
 use movies_tracker::search_movies::search_movies;
@@ -58,6 +59,7 @@ pub fn create_routes(database: DatabaseConnection, r2_store: R2Store) -> Router 
         .route("/movies/lists/add", post(add_new_list))
         .route("/movies/lists", get(get_movie_lists))
         .route("/movies/lists/:list_id", get(get_movie_list))
+        .route("/movies/season/:season_id", get(get_season_details))
         .route("/expense/get_tracked", get(get_tracked_expense))
         .route("/user/logout", post(logout))
         .route_layer(middleware::from_fn(guard))
