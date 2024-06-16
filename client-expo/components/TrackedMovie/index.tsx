@@ -1,4 +1,4 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
@@ -45,8 +45,9 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
         >
           <View style={[styles.titleView]}>
             <View style={styles.titleWrapper}>
-              <Text style={styles.movieTitleText}>{props.title}</Text>
-              <Text style={styles.yearText}>{props.year}</Text>
+              <Text style={styles.movieTitleText}>
+                {props.title} <Text style={styles.yearText}>{props.year}</Text>
+              </Text>
             </View>
             <View style={styles.starView}>
               {rating.map((value, index) => (
@@ -58,6 +59,13 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
                 />
               ))}
               {props.liked && <FontAwesome name={'heart'} size={10} style={styles.likedIcon} />}
+              {props.rewatch ? (
+                <MaterialCommunityIcons
+                  name="repeat-variant"
+                  size={16}
+                  color={SURFACE_COLORS.BACKDROP}
+                />
+              ) : null}
             </View>
           </View>
         </View>
@@ -107,10 +115,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: BORDERS_COLORS.SECONDARY,
   },
-  starView: { flexDirection: 'row', marginTop: 2 },
-  titleWrapper: { flexDirection: 'row' },
+  starView: { flexDirection: 'row', marginTop: 2, alignItems: 'center' },
+  titleWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 8,
+  },
   movieTitleText: { fontWeight: 'bold' },
-  yearText: { marginLeft: 4, color: TEXT_COLORS.BODY_L2 },
-  likedIcon: { marginLeft: 8, alignSelf: 'center', color: SURFACE_COLORS.BRIGHT_ORANGE },
+  yearText: { marginHorizontal: 8, color: TEXT_COLORS.BODY_L2 },
+  likedIcon: { marginHorizontal: 4, alignSelf: 'center', color: SURFACE_COLORS.BRIGHT_ORANGE },
 });
 export default TrackedMovie;

@@ -20,6 +20,7 @@ pub struct Model {
     pub poster: Option<String>,
     pub year: i32,
     pub title: String,
+    pub rewatch: Option<i8>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

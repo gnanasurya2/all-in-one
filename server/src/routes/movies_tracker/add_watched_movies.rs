@@ -21,6 +21,7 @@ pub struct RequestAddWatchedMovie {
     poster: String,
     title: String,
     year: i32,
+    rewatch: bool,
 }
 
 #[derive(Serialize)]
@@ -60,6 +61,7 @@ pub async fn add_watched_movie(
         poster: Set(Some(request_payload.poster)),
         year: Set(request_payload.year),
         title: Set(request_payload.title),
+        rewatch: Set(Some(request_payload.rewatch as i8)),
         ..Default::default()
     };
 

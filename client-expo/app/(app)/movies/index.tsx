@@ -20,6 +20,7 @@ export type MovieData =
       poster: string;
       liked: boolean;
       isLast: boolean;
+      rewatch: boolean;
     }
   | { header: true; title: string; id: string; isLast: boolean };
 
@@ -73,11 +74,12 @@ const HomeScreen = () => {
             title: value.title,
             year: value.year,
             rating: value.rating,
-            id: value.imdb_id,
+            id: `${value.imdb_id}_${watchedDate.getTime()}`,
             poster: value.poster,
             day: watchedDate.getDate(),
             liked: value.liked,
             isLast: false,
+            rewatch: value.rewatch,
           });
         });
       setHeaderIndices(headerIndices);

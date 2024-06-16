@@ -14,6 +14,7 @@ export interface TrackedMovie {
   imdb_id: string;
   title: string;
   liked: boolean;
+  rewatch: boolean;
 }
 
 export interface getTrackedMoviesResponse {
