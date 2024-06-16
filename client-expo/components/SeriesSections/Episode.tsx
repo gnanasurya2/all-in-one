@@ -1,21 +1,30 @@
 import Text from '@components/Text';
 import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '@constants/styles';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 type EpisodeProps = {
   episodeNumber: string;
   title: string;
   watched: boolean | null;
   width: number;
+  onPressHandler: () => void;
 };
-const Episode = ({ width, title, episodeNumber }: EpisodeProps) => {
+const Episode = ({ width, title, episodeNumber, onPressHandler, watched }: EpisodeProps) => {
   return (
-    <View style={[styles.wrapper, { width: width - 32 }]}>
-      <View style={styles.dayView}>
-        <Text style={styles.dayText}>{episodeNumber}</Text>
+    <Pressable onPress={onPressHandler}>
+      <View
+        style={[
+          styles.wrapper,
+          { width: width - 32 },
+          watched ? { backgroundColor: SURFACE_COLORS.SUCCESS } : {},
+        ]}
+      >
+        <View style={[styles.dayView, watched ? { borderColor: 'white' } : {}]}>
+          <Text style={[styles.dayText, watched ? { color: 'white' } : {}]}>{episodeNumber}</Text>
+        </View>
+        <Text>{title}</Text>
       </View>
-      <Text>{title}</Text>
-    </View>
+    </Pressable>
   );
 };
 

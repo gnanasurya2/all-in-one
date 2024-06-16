@@ -1,7 +1,6 @@
 import { useGetSeasonEpisodes } from '@api/movies/getSeasonEpisodes';
-import Text from '@components/Text';
 import { TEXT_COLORS } from '@constants/styles';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -19,6 +18,9 @@ type SeriesSectionsProps = {
   imdbId: string;
 };
 
+type EpisodeState = {
+  [key: string]: { watched: boolean };
+};
 type ContentElementProps = {
   item: string;
   index: number;
@@ -51,12 +53,17 @@ const Episodes = ({
   seasonId,
   imdbId,
   width,
+  onPressHandler,
+  episodeState,
 }: {
   seasonId: number;
   imdbId: string;
   width: number;
+  onPressHandler: (season: number, episode: string) => void;
+  episodeState: EpisodeState;
 }) => {
   const { data, isLoading } = useGetSeasonEpisodes({ seasonId, imdbId });
+
   return isLoading ? (
     <ActivityIndicator />
   ) : (
@@ -66,8 +73,9 @@ const Episodes = ({
           key={item.episode}
           episodeNumber={item.episode}
           title={item.title}
-          watched={item.watched}
+          watched={item.watched || episodeState[`${seasonId}-${item.episode}`]?.watched}
           width={width}
+          onPressHandler={() => onPressHandler(seasonId, item.episode)}
         />
       ))}
     </ScrollView>
@@ -86,6 +94,7 @@ const SeriesSections = ({ numberOfSeasons, imdbId }: SeriesSectionsProps) => {
   const tableOfContentsRef = useRef<FlatList>(null);
   const sectionCardRef = useRef<FlatList>(null);
   const visibleIndex = useSharedValue(0);
+  const [episodeState, setEpisodeState] = useState<EpisodeState>({});
 
   return (
     <>
@@ -124,7 +133,20 @@ const SeriesSections = ({ numberOfSeasons, imdbId }: SeriesSectionsProps) => {
             }}
           >
             {visibleIndex.value === index ? (
-              <Episodes seasonId={index + 1} imdbId={imdbId} width={dimensions.width} />
+              <Episodes
+                seasonId={index + 1}
+                imdbId={imdbId}
+                width={dimensions.width}
+                onPressHandler={(season, episode) =>
+                  setEpisodeState((prev) => ({
+                    ...prev,
+                    [`${season}-${episode}`]: {
+                      watched: !prev[`${season}-${episode}`]?.watched,
+                    },
+                  }))
+                }
+                episodeState={episodeState}
+              />
             ) : (
               <ActivityIndicator />
             )}
