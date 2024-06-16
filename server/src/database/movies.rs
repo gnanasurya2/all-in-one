@@ -21,6 +21,9 @@ pub struct Model {
     pub year: i32,
     pub title: String,
     pub rewatch: Option<i8>,
+    pub r#type: Option<String>,
+    pub season: Option<i32>,
+    pub episode: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

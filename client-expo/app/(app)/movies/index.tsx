@@ -6,8 +6,9 @@ import { readLastNSMS } from '@modules/read-sms';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../../constants/styles';
-import { Link, useRouter, useNavigation } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import MenuButton from '@components/MenuButton';
+import { ContentType } from '@constants/enums';
 
 export type MovieData =
   | {
@@ -21,8 +22,10 @@ export type MovieData =
       liked: boolean;
       isLast: boolean;
       rewatch: boolean;
+      type: ContentType;
+      key: string;
     }
-  | { header: true; title: string; id: string; isLast: boolean };
+  | { header: true; title: string; key: string; isLast: boolean };
 
 const HomeScreen = () => {
   const [moviesData, setMoviesData] = useState<Array<MovieData>>([]);
@@ -64,7 +67,7 @@ const HomeScreen = () => {
             result.push({
               header: true,
               title: `${currentMonth} ${watchedDate.getFullYear()}`,
-              id: generatedId,
+              key: generatedId,
               isLast: false,
             });
             lastMonth = currentMonth;
@@ -74,12 +77,14 @@ const HomeScreen = () => {
             title: value.title,
             year: value.year,
             rating: value.rating,
-            id: `${value.imdb_id}_${watchedDate.getTime()}`,
+            key: `${value.imdb_id}_${watchedDate.getTime()}`,
+            id: value.imdb_id,
             poster: value.poster,
             day: watchedDate.getDate(),
             liked: value.liked,
             isLast: false,
             rewatch: value.rewatch,
+            type: value.type,
           });
         });
       setHeaderIndices(headerIndices);
@@ -103,18 +108,19 @@ const HomeScreen = () => {
         renderItem={({ item }) => (
           <TrackedMovie
             {...item}
-            key={item.id}
-            onPressHandler={(id) => {
+            key={item.key}
+            onPressHandler={(id, type) => {
               router.push({
                 pathname: '/(app)/movies/movie',
                 params: {
                   id,
+                  type,
                 },
               });
             }}
           />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.key}
         onEndReachedThreshold={0.5}
         onEndReached={() => {
           fetchNextPage();
