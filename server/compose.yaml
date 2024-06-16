@@ -12,7 +12,7 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
   server:
-    image: server:1.6
+    image: server:1.7
     container_name: server
     hostname: server
     environment:
