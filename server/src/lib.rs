@@ -13,10 +13,13 @@ use sea_orm::Database;
 use tokio::net::TcpListener;
 
 use crate::services::r2::R2Store;
+use migration::{Migrator, MigratorTrait};
 
 pub async fn run(database_url: &str) {
     info!("database url {}", database_url);
     let database = Database::connect(database_url).await.unwrap();
+
+    Migrator::up(&database, None).await.unwrap();
 
     let access_key_id = env::var("R2_ACCESS_KEY_ID").unwrap();
     let secret_key_key = env::var("R2_SECRET_ACCESS_KEY").unwrap();
