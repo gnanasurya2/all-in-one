@@ -61,7 +61,6 @@ const MovieScreen = () => {
 
   useEffect(() => {
     if (data) {
-      console.log('data', data);
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
@@ -119,7 +118,11 @@ const MovieScreen = () => {
             <>
               <ContentDetails data={data} />
               {data.Type === ContentType.Series ? (
-                <SeriesSections numberOfSeasons={data.NumberOfSeasons} imdbId={movieId} />
+                <SeriesSections
+                  numberOfSeasons={data.NumberOfSeasons}
+                  imdbId={movieId}
+                  title={data.Title}
+                />
               ) : (
                 <>
                   <CustomButton
