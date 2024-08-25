@@ -18,6 +18,7 @@ use guard::guard;
 use hello_world::hello_world;
 use movies_tracker::add_movie_to_lists::add_movie_to_lists;
 use movies_tracker::add_new_list::add_new_list;
+use movies_tracker::add_watched_episodes::add_watched_episodes;
 use movies_tracker::add_watched_movies::add_watched_movie;
 use movies_tracker::get_movie_list::get_movie_list;
 use movies_tracker::get_movie_lists::get_movie_lists;
@@ -52,6 +53,7 @@ pub fn create_routes(database: DatabaseConnection, r2_store: R2Store) -> Router 
         .route("/movies/get", get(get_movies))
         .route("/movies/search", get(search_movies))
         .route("/movies/add_watched", post(add_watched_movie))
+        .route("/movies/add_watched_series", post(add_watched_episodes))
         .route("/movies/update_watched", patch(update_watched_movies))
         .route("/movies/get_tracked", get(get_watched_movies))
         .route("/movies/get_watchlist", get(get_watchlist_movies))
