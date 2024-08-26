@@ -1,4 +1,4 @@
-import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
@@ -46,9 +46,8 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
         >
           <View style={[styles.titleView]}>
             <View style={styles.titleWrapper}>
-              <Text style={styles.movieTitleText}>
-                {props.title} <Text style={styles.yearText}>{props.year}</Text>
-              </Text>
+              <Text style={styles.movieTitleText}>{props.title}</Text>
+              <Text style={styles.yearText}>{props.year}</Text>
             </View>
             <View style={styles.starView}>
               {rating.map((value, index) => (
@@ -66,6 +65,9 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
                   size={16}
                   color={SURFACE_COLORS.BACKDROP}
                 />
+              ) : null}
+              {props.type === 'series' ? (
+                <Ionicons name="tv-sharp" size={16} style={styles.seriesIcon} />
               ) : null}
             </View>
           </View>
@@ -125,5 +127,6 @@ const styles = StyleSheet.create({
   movieTitleText: { fontWeight: 'bold' },
   yearText: { marginHorizontal: 8, color: TEXT_COLORS.BODY_L2 },
   likedIcon: { marginHorizontal: 4, alignSelf: 'center', color: SURFACE_COLORS.BRIGHT_ORANGE },
+  seriesIcon: { alignSelf: 'center', marginHorizontal: 4, color: SURFACE_COLORS.INFORMATION },
 });
 export default TrackedMovie;

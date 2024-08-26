@@ -77,7 +77,8 @@ const HomeScreen = () => {
             title: value.title,
             year: value.year,
             rating: value.rating,
-            key: `${value.imdb_id}_${watchedDate.getTime()}`,
+            //TODO: send actual id from db
+            key: `${value.imdb_id}_${watchedDate.getTime()}_${result.length}`,
             id: value.imdb_id,
             poster: value.poster,
             day: watchedDate.getDate(),

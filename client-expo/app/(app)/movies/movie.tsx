@@ -122,6 +122,7 @@ const MovieScreen = () => {
                   numberOfSeasons={data.NumberOfSeasons}
                   imdbId={movieId}
                   title={data.Title}
+                  poster={data.Poster}
                 />
               ) : (
                 <>

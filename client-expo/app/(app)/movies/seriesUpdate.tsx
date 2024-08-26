@@ -15,6 +15,7 @@ const SeriesUpdateScreen = () => {
     title: routeData.title as string,
     episodes: episodeData,
     imdbId: routeData.imdbId as string,
+    poster: routeData.poster as string,
   });
   useEffect(() => {
     if (typeof routeData.data === 'string') {
@@ -27,6 +28,7 @@ const SeriesUpdateScreen = () => {
             season: parseInt(season),
             episode: parseInt(episode),
             title: parsedData[ele].title,
+            year: parsedData[ele].year,
             rating: 0,
             watchedTime: new Date().toISOString(),
           };
@@ -39,6 +41,7 @@ const SeriesUpdateScreen = () => {
       title: routeData.title as string,
       episodes: episodeData,
       imdbId: routeData.imdbId as string,
+      poster: routeData.poster as string,
     });
     router.back();
   };

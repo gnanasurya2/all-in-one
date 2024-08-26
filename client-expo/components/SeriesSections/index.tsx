@@ -20,10 +20,11 @@ type SeriesSectionsProps = {
   numberOfSeasons: string;
   imdbId: string;
   title: string;
+  poster: string;
 };
 
 type EpisodeState = {
-  [key: string]: { watched: boolean; title: string };
+  [key: string]: { watched: boolean; title: string; year: number };
 };
 type ContentElementProps = {
   item: string;
@@ -71,7 +72,7 @@ const Episodes = ({
   seasonId: number;
   imdbId: string;
   width: number;
-  onPressHandler: (season: number, episode: string, title: string) => void;
+  onPressHandler: (season: number, episode: string, title: string, year: number) => void;
   episodeState: EpisodeState;
 }) => {
   const { data, isLoading } = useGetSeasonEpisodes({ seasonId, imdbId });
@@ -98,7 +99,14 @@ const Episodes = ({
             title={item.title}
             watched={item.watched || episodeState[`${seasonId}-${item.episode}`]?.watched}
             width={width}
-            onPressHandler={() => onPressHandler(seasonId, item.episode, item.title)}
+            onPressHandler={() =>
+              onPressHandler(
+                seasonId,
+                item.episode,
+                item.title,
+                parseInt(item.released.split('-')[0] || '0')
+              )
+            }
           />
         )
       )}
@@ -106,7 +114,7 @@ const Episodes = ({
   );
 };
 
-const SeriesSections = ({ numberOfSeasons, imdbId, title }: SeriesSectionsProps) => {
+const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectionsProps) => {
   const dimensions = useWindowDimensions();
   const seasonNames: Array<string> = useMemo(() => {
     const names = [];
@@ -154,6 +162,7 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title }: SeriesSectionsProps)
                   data: JSON.stringify(episodeState),
                   imdbId,
                   title,
+                  poster,
                 },
               });
             }}
@@ -201,12 +210,13 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title }: SeriesSectionsProps)
                 seasonId={selectedSeason + 1}
                 imdbId={imdbId}
                 width={dimensions.width}
-                onPressHandler={(season, episode, title) =>
+                onPressHandler={(season, episode, title, year) =>
                   setEpisodeState((prev) => ({
                     ...prev,
                     [`${season}-${episode}`]: {
                       watched: !prev[`${season}-${episode}`]?.watched,
                       title,
+                      year,
                     },
                   }))
                 }

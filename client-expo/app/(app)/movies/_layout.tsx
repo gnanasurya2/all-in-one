@@ -87,6 +87,14 @@ export default function MovieLayout() {
           },
         }}
       />
+      <Drawer.Screen
+        name="seriesUpdate"
+        options={{
+          drawerItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
     </Drawer>
   );
 }

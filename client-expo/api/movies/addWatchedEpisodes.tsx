@@ -17,12 +17,14 @@ export type UpdateEpisodeData = {
   episode: number;
   rating: number;
   title: string;
+  year: number;
   watchedTime: string;
 };
 
 export interface addWatchedEpisodesRequest {
   title: string;
   imdbId: string;
+  poster: string;
   episodes: Array<UpdateEpisodeData>;
 }
 
