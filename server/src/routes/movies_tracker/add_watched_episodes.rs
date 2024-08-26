@@ -1,11 +1,9 @@
 use axum::http::StatusCode;
 use axum::{Extension, Json};
-use chrono::{Datelike, NaiveDateTime, Utc};
-use sea_orm::sea_query::OnConflict;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set, TryIntoModel};
+use chrono::{Datelike, NaiveDateTime};
+use sea_orm::{DatabaseConnection, EntityTrait, Set};
 use serde::{Deserialize, Serialize};
 
-use crate::database::movies::Column;
 use crate::database::{
     movies::{self, ActiveModel},
     prelude::Movies,
@@ -21,6 +19,7 @@ pub struct EpisodeData {
     title: String,
     #[serde(rename = "watched_time", alias = "watchedTime")]
     watched_time: String,
+    year: i32,
 }
 
 #[derive(Deserialize)]
@@ -28,6 +27,7 @@ pub struct RequestAddWatchedMovie {
     title: String,
     #[serde(rename = "imdb_id", alias = "imdbId")]
     imdb_id: String,
+    poster: String,
     episodes: Vec<EpisodeData>,
 }
 
@@ -55,10 +55,6 @@ pub async fn add_watched_episodes(
                     })
                     .unwrap_or_default();
 
-            let mut episode_title = request_payload.title.clone();
-            episode_title.push_str(":");
-            episode_title.push_str(&episode.title);
-
             return movies::ActiveModel {
                 imdb_id: Set(request_payload.imdb_id.clone()),
                 user_id: Set(user.id),
@@ -67,8 +63,12 @@ pub async fn add_watched_episodes(
                 episode: Set(Some(episode.episode)),
                 watched_date: Set(Some(watched_date)),
                 watched: Set(Some(1)),
-                year: Set(chrono::Utc::now().year()),
-                title: Set(episode_title),
+                poster: Set(Some(request_payload.poster.clone())),
+                year: Set(episode.year),
+                title: Set(format!(
+                    "S{} E{}: {}",
+                    episode.season, episode.episode, episode.title
+                )),
                 r#type: Set(Some("series".to_owned())),
                 ..Default::default()
             };

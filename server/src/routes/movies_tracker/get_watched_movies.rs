@@ -75,6 +75,8 @@ pub async fn get_watched_movies(
         .filter(movies::Column::UserId.eq(user.id))
         .filter(movies::Column::Watched.eq(1))
         .order_by_desc(movies::Column::WatchedDate)
+        .order_by_desc(movies::Column::Season)
+        .order_by_desc(movies::Column::Episode)
         .into_model::<QueryResultTrackedMovie>()
         .paginate(&database, query.page_size)
         .fetch_page(query.page - 1)
