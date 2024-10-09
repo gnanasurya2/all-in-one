@@ -6,7 +6,7 @@ import Separator from '@components/Separator';
 import { SURFACE_COLORS } from '@constants/styles';
 import { useDebounce } from '@hooks/useDebounce';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 
 const SearchScreen = () => {
@@ -16,13 +16,6 @@ const SearchScreen = () => {
   const router = useRouter();
 
   const { data, fetchNextPage } = useSearchMovies({ title: debouncedSearchText });
-  useEffect(() => {
-    // const unsubscribe = navigation.addListener('transitionEnd', () => {
-    //   console.log('input ref', inputRef.current);
-    //   inputRef.current?.focus();
-    // });
-    // return unsubscribe;
-  }, []);
 
   const searchResults = useMemo(() => {
     return data?.pages.flatMap((value) => value.Search) || [];
@@ -51,8 +44,7 @@ const SearchScreen = () => {
               }}
             />
           )}
-          // eslint-disable-next-line react/no-unstable-nested-components
-          ItemSeparatorComponent={() => <Separator />}
+          ItemSeparatorComponent={Separator}
           keyExtractor={(item) => item.imdbID}
           onEndReachedThreshold={0.5}
           onEndReached={() => {

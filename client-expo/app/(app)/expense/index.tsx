@@ -21,7 +21,7 @@ const HomeScreen = () => {
         isIncome={true}
         title="Salary"
         date={1700418154658}
-        amount={87439}
+        amount={1230123}
         category="Income"
       />
     </View>
