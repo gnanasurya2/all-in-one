@@ -35,6 +35,7 @@ export const useMovieLists = () => {
       }
     },
     staleTime: Infinity,
+    initialPageParam: 1,
   });
   return query;
 };

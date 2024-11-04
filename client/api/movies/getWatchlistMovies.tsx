@@ -41,6 +41,7 @@ export const useGetWatchlistMovies = (params: { page_size: number }) => {
       }
     },
     staleTime: Infinity,
+    initialPageParam: 1,
   });
   return query;
 };

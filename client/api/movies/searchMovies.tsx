@@ -56,6 +56,7 @@ export const useSearchMovies = ({ title }: { title: string }) => {
       }
     },
     staleTime: Infinity,
+    initialPageParam: 1,
   });
   return query;
 };

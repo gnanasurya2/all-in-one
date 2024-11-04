@@ -47,6 +47,7 @@ export const useMoviesInLists = ({ listId }: GetMovieInListsRequest) => {
       }
     },
     staleTime: Infinity,
+    initialPageParam: 1,
   });
   return query;
 };

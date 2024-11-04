@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 export interface addTrackedMovieResponse {
@@ -38,14 +38,13 @@ export const useWatchedEpisodes = (params: addWatchedEpisodesRequest) => {
   const query = useMutation({
     mutationFn: addWatchedEpisodes,
     onSuccess: () => {
-      const set = new Set();
+      const set = new Set<number>();
       params.episodes.forEach((ele) => {
         set.add(ele.season);
       });
 
       for (const season of set) {
-        console.log('season', season);
-        queryClient.invalidateQueries(['getSeasonEpisode', season, params.imdbId]);
+        queryClient.invalidateQueries({ queryKey: ['getSeasonEpisode', season, params.imdbId] });
       }
     },
   });

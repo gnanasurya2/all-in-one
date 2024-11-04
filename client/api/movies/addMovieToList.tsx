@@ -1,6 +1,5 @@
-import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { GetMovieListsResponse } from './getMovieLists';
 
 export interface addMovieToListRequest {
   list_ids: Array<number>;
@@ -23,7 +22,9 @@ export const useAddMovieToList = () => {
   const query = useMutation({
     mutationFn: addMovieToList,
     onSuccess: (_, request) => {
-      queryClient.invalidateQueries(['getMoviesForLists', request.list_ids]);
+      queryClient.invalidateQueries({
+        queryKey: ['getMoviesForLists', request.list_ids],
+      });
     },
   });
   return query;

@@ -14,6 +14,11 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-client-clientTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-client-clientTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		BEBB9B501AC24F0F808505D7 /* HelveticaRoundedLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA8EA9CEFC8D4EA8AFD6CDD0 /* HelveticaRoundedLTStd-Bd.otf */; };
+		CCC9B732DB334431BDA6D531 /* HelveticaRoundedLTStd-BdCn.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2D7AAC6203CA4DD5A91E27D7 /* HelveticaRoundedLTStd-BdCn.otf */; };
+		4D245DEA07E5453787D2660D /* HelveticaRoundedLTStd-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = BA802D3C066B463AB6E2A9DC /* HelveticaRoundedLTStd-Black.otf */; };
+		36A6611627D04C9993D569C2 /* GTWalsheimProBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC91242C9ACD45BB997F8A35 /* GTWalsheimProBold.ttf */; };
+		95F611B723314BE48BA534CC /* GTWalsheimProRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C8F47582DA6547B2A8E9F871 /* GTWalsheimProRegular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +50,11 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = client/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-client-clientTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-client-clientTests.release.xcconfig"; path = "Target Support Files/Pods-client-clientTests/Pods-client-clientTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		AA8EA9CEFC8D4EA8AFD6CDD0 /* HelveticaRoundedLTStd-Bd.otf */ = {isa = PBXFileReference; name = "HelveticaRoundedLTStd-Bd.otf"; path = "../assets/fonts/HelveticaRoundedLTStd-Bd.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2D7AAC6203CA4DD5A91E27D7 /* HelveticaRoundedLTStd-BdCn.otf */ = {isa = PBXFileReference; name = "HelveticaRoundedLTStd-BdCn.otf"; path = "../assets/fonts/HelveticaRoundedLTStd-BdCn.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BA802D3C066B463AB6E2A9DC /* HelveticaRoundedLTStd-Black.otf */ = {isa = PBXFileReference; name = "HelveticaRoundedLTStd-Black.otf"; path = "../assets/fonts/HelveticaRoundedLTStd-Black.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		CC91242C9ACD45BB997F8A35 /* GTWalsheimProBold.ttf */ = {isa = PBXFileReference; name = "GTWalsheimProBold.ttf"; path = "../assets/fonts/GTWalsheimProBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C8F47582DA6547B2A8E9F871 /* GTWalsheimProRegular.ttf */ = {isa = PBXFileReference; name = "GTWalsheimProRegular.ttf"; path = "../assets/fonts/GTWalsheimProRegular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +134,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				CCA27DBAE08446C1AE450BC6 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -149,6 +160,19 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		CCA27DBAE08446C1AE450BC6 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				AA8EA9CEFC8D4EA8AFD6CDD0 /* HelveticaRoundedLTStd-Bd.otf */,
+				2D7AAC6203CA4DD5A91E27D7 /* HelveticaRoundedLTStd-BdCn.otf */,
+				BA802D3C066B463AB6E2A9DC /* HelveticaRoundedLTStd-Black.otf */,
+				CC91242C9ACD45BB997F8A35 /* GTWalsheimProBold.ttf */,
+				C8F47582DA6547B2A8E9F871 /* GTWalsheimProRegular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -245,6 +269,11 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				BEBB9B501AC24F0F808505D7 /* HelveticaRoundedLTStd-Bd.otf in Resources */,
+				CCC9B732DB334431BDA6D531 /* HelveticaRoundedLTStd-BdCn.otf in Resources */,
+				4D245DEA07E5453787D2660D /* HelveticaRoundedLTStd-Black.otf in Resources */,
+				36A6611627D04C9993D569C2 /* GTWalsheimProBold.ttf in Resources */,
+				95F611B723314BE48BA534CC /* GTWalsheimProRegular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

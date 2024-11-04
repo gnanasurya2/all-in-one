@@ -62,7 +62,7 @@ export interface getSeriesResponse {
   Writer: string;
 }
 
-async function getMovie(id: string, type: ContentType) {
+async function getMovie(id: string, type: string) {
   const response = await axios.get<getMovieResponse | getSeriesResponse>('/movies/get', {
     params: {
       id,
@@ -72,7 +72,7 @@ async function getMovie(id: string, type: ContentType) {
   return response.data;
 }
 
-export const useGetMovies = ({ id, type }: { id: string; type: ContentType }) => {
+export const useGetMovies = ({ id, type }: { id: string; type: string }) => {
   const query = useQuery({
     queryKey: ['getMovie', id, type],
     queryFn: () => getMovie(id, type),

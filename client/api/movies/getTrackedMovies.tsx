@@ -38,14 +38,15 @@ const getTrackedMovies = async (params: getTrackedMoviesParams) => {
 export const useGetTrackedMovies = (params: { page_size: number }) => {
   const query = useInfiniteQuery({
     queryKey: ['trackedMovies'],
-    queryFn: ({ pageParam = 1 }) =>
-      getTrackedMovies({ page: pageParam, page_size: params.page_size }),
+    queryFn: ({ pageParam }) => getTrackedMovies({ page: pageParam, page_size: params.page_size }),
     getNextPageParam: (lastPage) => {
       if (lastPage.has_more) {
         return lastPage.page_number + 1;
       }
     },
     staleTime: Infinity,
+    initialPageParam: 1,
   });
+
   return query;
 };
