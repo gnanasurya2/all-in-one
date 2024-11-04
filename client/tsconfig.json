@@ -1,0 +1,26 @@
+{
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@components/*": [
+        "./components/*"
+      ],
+      "@api/*": [
+        "./api/*"
+      ],
+      "@hooks/*": [
+        "./hooks/*"
+      ],
+      "@modules/*": [
+        "./modules/*"
+      ],
+      "@constants/*": [
+        "./constants/*"
+      ],
+      "context/*" :[
+        "./context/*"
+      ]
+    }
+  }
+}
