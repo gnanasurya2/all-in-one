@@ -1,23 +1,34 @@
-import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { useMovieLists } from '../../api/movies/getMovieLists';
+import React, {useMemo} from 'react';
+import {FlatList, StatusBar, StyleSheet, View} from 'react-native';
+import {useMovieLists} from '../../api/movies/getMovieLists';
 import AddButton from '../../components/AddButton';
 import MovieList from '../../components/MovieList';
 import Separator from '../../components/Separator';
-import { SURFACE_COLORS } from '../../constants/styles';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { MovieDrawerParamList } from '../../navigation/MovieNavigator';
+import {SURFACE_COLORS} from '../../constants/styles';
+import {DrawerScreenProps} from '@react-navigation/drawer';
+import {MovieDrawerParamList} from '../../navigation/MovieNavigator';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 
-const ListsScreen = ({ navigation }: DrawerScreenProps<MovieDrawerParamList, 'Lists'>) => {
-  const { data, fetchNextPage } = useMovieLists();
+const ListsScreen = ({
+  navigation,
+}: DrawerScreenProps<MovieDrawerParamList, 'Lists'>) => {
+  const {data, fetchNextPage} = useMovieLists();
 
-  const movieLists = useMemo(() => data?.pages.flatMap((value) => value.response), [data]);
+  const movieLists = useMemo(
+    () => data?.pages.flatMap(value => value.response),
+    [data],
+  );
 
   return (
     <View style={styles.wrapper}>
+      <FocusAwareStatusBar
+        translucent
+        backgroundColor={SURFACE_COLORS.PAGE}
+        barStyle="light-content"
+      />
       <FlatList
         data={movieLists}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <MovieList
             description={item.description}
             title={item.title}
@@ -31,8 +42,10 @@ const ListsScreen = ({ navigation }: DrawerScreenProps<MovieDrawerParamList, 'Li
             }}
           />
         )}
-        ItemSeparatorComponent={() => <Separator style={{ marginHorizontal: 0 }} />}
-        keyExtractor={(item) => item.id.toString()}
+        ItemSeparatorComponent={() => (
+          <Separator style={{marginHorizontal: 0}} />
+        )}
+        keyExtractor={item => item.id.toString()}
         onEndReachedThreshold={0.5}
         onEndReached={() => {
           fetchNextPage();
@@ -51,6 +64,7 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: SURFACE_COLORS.PAGE,
+    paddingTop: StatusBar.currentHeight,
     justifyContent: 'flex-start',
   },
 });

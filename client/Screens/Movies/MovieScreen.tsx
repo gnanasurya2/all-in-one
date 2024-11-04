@@ -1,28 +1,30 @@
-import { useAddTrackedMovie } from '../../api/movies/addWatchedMovie';
-import { getMovieResponse, useGetMovies } from '../../api/movies/getMovies';
-import { useUpdateTrackedMovie } from '../../api/movies/updateWatchedMovie';
+import {useAddTrackedMovie} from '../../api/movies/addWatchedMovie';
+import {getMovieResponse, useGetMovies} from '../../api/movies/getMovies';
+import {useUpdateTrackedMovie} from '../../api/movies/updateWatchedMovie';
 import CustomButton from '../../components/Button';
 import Loader from '../../components/Loader';
-import { GRADIENT_COLORS, SURFACE_COLORS } from '../../constants/styles';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { movieStartTime } from '../../utils/movieStartTime';
-import { ContentType } from '../../constants/enums';
+import {GRADIENT_COLORS, SURFACE_COLORS} from '../../constants/styles';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {useQueryClient} from '@tanstack/react-query';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {movieStartTime} from '../../utils/movieStartTime';
+import {ContentType} from '../../constants/enums';
 import ContentDetails from '../../components/ContentDetails';
 import SeriesSections from '../../components/SeriesSections';
-import MovieBottomSheet, { datePickerMode } from '../../components/MovieBottomSheet';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { MovieDrawerParamList } from '../../navigation/MovieNavigator';
+import MovieBottomSheet, {
+  datePickerMode,
+} from '../../components/MovieBottomSheet';
+import {DrawerScreenProps} from '@react-navigation/drawer';
+import {MovieDrawerParamList} from '../../navigation/MovieNavigator';
 import LinearGradient from 'react-native-linear-gradient';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 
 const MovieScreen = ({
   navigation,
   route: {
-    params: { id: movieId, type },
+    params: {id: movieId, type},
   },
 }: DrawerScreenProps<MovieDrawerParamList, 'Movie'>) => {
   const [watched, setWatched] = useState(false);
@@ -32,14 +34,14 @@ const MovieScreen = ({
   const [watchDate, setWatchedDate] = useState(new Date());
   const [starRating, setStarRating] = useState(0);
 
-  const { data } = useGetMovies({ id: movieId, type });
+  const {data} = useGetMovies({id: movieId, type});
 
-  const { mutate, isSuccess } = useUpdateTrackedMovie({
+  const {mutate, isSuccess} = useUpdateTrackedMovie({
     id: movieId,
     type,
     poster: data?.Poster || '',
   });
-  const { refetch, isFetching } = useAddTrackedMovie({
+  const {refetch, isFetching} = useAddTrackedMovie({
     imdb_id: movieId,
     liked,
     watch_list: watchList,
@@ -58,13 +60,17 @@ const MovieScreen = ({
       setLiked(data.liked ?? false);
       setWatched(data.watched ?? false);
       setStarRating(data.rating ?? 0);
-      setWatchedDate(new Date(data.watched_date ?? movieStartTime(data.Runtime)));
+      setWatchedDate(
+        new Date(data.watched_date ?? movieStartTime(data.Runtime)),
+      );
       setWatchList(data.watch_list ?? false);
     }
   }, [data]);
 
   const gradientColor = useMemo(() => {
-    const hash = movieId.split('').reduce((prev, curr) => prev + curr.charCodeAt(0), 0);
+    const hash = movieId
+      .split('')
+      .reduce((prev, curr) => prev + curr.charCodeAt(0), 0);
 
     return GRADIENT_COLORS[hash % GRADIENT_COLORS.length];
   }, [movieId]);
@@ -94,23 +100,20 @@ const MovieScreen = ({
 
   return (
     <View style={styles.outerWrapper}>
-      <Pressable
-        style={styles.iconWrapper}
-        onPress={() => {
-          navigation.goBack();
-        }}
-      >
-        <FontAwesome5 name="chevron-left" size={24} color="white" />
-      </Pressable>
+      <FocusAwareStatusBar
+        translucent
+        backgroundColor={'transparent'}
+        barStyle="light-content"
+      />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <LinearGradient
           colors={[`${gradientColor}FF`, `${gradientColor}00`]}
           style={styles.gradient}
         />
         <View style={styles.wrapper}>
+          <>{data ? <ContentDetails data={data} /> : null}</>
           {data ? (
             <>
-              <ContentDetails data={data} />
               {data.Type === ContentType.Series ? (
                 <SeriesSections
                   numberOfSeasons={data.NumberOfSeasons}
@@ -139,12 +142,12 @@ const MovieScreen = ({
                       starRating={starRating}
                       watchDate={watchDate}
                       isLoading={isFetching}
-                      onWatchedChange={() => setWatched((prev) => !prev)}
-                      onLikedChange={() => setLiked((prev) => !prev)}
-                      onWatchListChange={() => setWatchList((prev) => !prev)}
-                      onRewatchChange={() => setRewatch((prev) => !prev)}
-                      onRatingChange={(value) => setStarRating(value)}
-                      onChangeDateMode={(mode) => showMode(mode)}
+                      onWatchedChange={() => setWatched(prev => !prev)}
+                      onLikedChange={() => setLiked(prev => !prev)}
+                      onWatchListChange={() => setWatchList(prev => !prev)}
+                      onRewatchChange={() => setRewatch(prev => !prev)}
+                      onRatingChange={value => setStarRating(value)}
+                      onChangeDateMode={mode => showMode(mode)}
                       onPressAddToList={() => {
                         navigation.navigate('ViewList', {
                           imdbId: movieId,
@@ -171,14 +174,14 @@ const MovieScreen = ({
                           if (response.data?.id) {
                             queryClient.setQueryData<getMovieResponse>(
                               ['getMovie', movieId, type],
-                              (oldData) =>
+                              oldData =>
                                 oldData
                                   ? {
                                       ...oldData,
                                       ...response.data,
                                       isLogged: true,
                                     }
-                                  : oldData
+                                  : oldData,
                             );
                           }
                         }
@@ -202,11 +205,6 @@ const styles = StyleSheet.create({
     backgroundColor: SURFACE_COLORS.PAGE,
     flex: 1,
   },
-  iconWrapper: {
-    position: 'absolute',
-    padding: 8,
-    zIndex: 10,
-  },
   icon: {
     width: 50,
     height: 50,
@@ -226,6 +224,7 @@ const styles = StyleSheet.create({
   reviewButton: {
     width: '100%',
     marginVertical: 8,
+    marginBottom: 24,
     paddingVertical: 6,
     borderRadius: 8,
     backgroundColor: SURFACE_COLORS.BACKDROP,

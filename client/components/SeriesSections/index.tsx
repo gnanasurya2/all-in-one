@@ -1,8 +1,8 @@
 import React from 'react';
-import { useGetSeasonEpisodes } from '../../api/movies/getSeasonEpisodes';
+import {useGetSeasonEpisodes} from '../../api/movies/getSeasonEpisodes';
 import CustomButton from '../Button';
-import { TEXT_COLORS } from '../../constants/styles';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {TEXT_COLORS} from '../../constants/styles';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,18 +12,17 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import Animated, {
-  runOnJS,
-  SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, {runOnJS, useAnimatedStyle} from 'react-native-reanimated';
 import Episode from './Episode';
 import WatchedEpisode from './WatchedEpisode';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { MovieDrawerParamList } from '../../navigation/MovieNavigator';
-import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {DrawerNavigationProp} from '@react-navigation/drawer';
+import {MovieDrawerParamList} from '../../navigation/MovieNavigator';
+import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler';
 
 type SeriesSectionsProps = {
   numberOfSeasons: string;
@@ -33,40 +32,37 @@ type SeriesSectionsProps = {
 };
 
 type EpisodeState = {
-  [key: string]: { watched: boolean; title: string; year: number };
+  [key: string]: {watched: boolean; title: string; year: number};
 };
 type ContentElementProps = {
   item: string;
   index: number;
-  visibleIndex: SharedValue<number>;
+  selectedSeason: number;
   setSelectedSeason: React.Dispatch<React.SetStateAction<number>>;
-  sectionCardsRef: React.RefObject<FlatList<unknown>>;
 };
 
-const useSelectedStyle = (selectedItem: SharedValue<number>, item: number) =>
+const useSelectedStyle = (selectedItem: number, item: number) =>
   useAnimatedStyle(() => ({
-    fontWeight: selectedItem.value === item ? '600' : '400',
-    borderBottomWidth: selectedItem.value === item ? 1 : 0,
+    fontWeight: selectedItem === item ? '600' : '400',
+    borderBottomWidth: selectedItem === item ? 1 : 0,
   }));
 
 const ContentsElement = ({
   index,
-  sectionCardsRef,
-  visibleIndex,
   item,
+  selectedSeason,
   setSelectedSeason,
 }: ContentElementProps) => {
-  const seletedStyle = useSelectedStyle(visibleIndex, index);
+  const seletedStyle = useSelectedStyle(selectedSeason, index);
   return (
     <Pressable
       onPress={() => {
-        sectionCardsRef.current?.scrollToIndex({ index, animated: true });
-        visibleIndex.value = index;
         setSelectedSeason(index);
       }}
-      style={[styles.tableOfContentsElement]}
-    >
-      <Animated.Text style={[seletedStyle, styles.tableOfContentsElement]}>{item}</Animated.Text>
+      style={[styles.tableOfContentsElement]}>
+      <Animated.Text style={[seletedStyle, styles.tableOfContentsElement]}>
+        {item}
+      </Animated.Text>
     </Pressable>
   );
 };
@@ -81,22 +77,30 @@ const Episodes = ({
   seasonId: number;
   imdbId: string;
   width: number;
-  onPressHandler: (season: number, episode: string, title: string, year: number) => void;
+  onPressHandler: (
+    season: number,
+    episode: string,
+    title: string,
+    year: number,
+  ) => void;
   episodeState: EpisodeState;
 }) => {
-  const { data, isLoading } = useGetSeasonEpisodes({ seasonId, imdbId });
+  const {data, isLoading} = useGetSeasonEpisodes({seasonId, imdbId});
 
   return isLoading ? (
     <ActivityIndicator />
   ) : (
     <ScrollView>
-      {data?.episodes.map((item) =>
+      {data?.episodes.map(item =>
         item.watched ? (
           <WatchedEpisode
             key={item.episode}
             episodeNumber={item.episode}
             title={item.title}
-            watched={item.watched || episodeState[`${seasonId}-${item.episode}`]?.watched}
+            watched={
+              item.watched ||
+              episodeState[`${seasonId}-${item.episode}`]?.watched
+            }
             width={width}
             rating={item.rating}
             time={item.watchedDate}
@@ -106,25 +110,34 @@ const Episodes = ({
             key={item.episode}
             episodeNumber={item.episode}
             title={item.title}
-            watched={item.watched || episodeState[`${seasonId}-${item.episode}`]?.watched}
+            watched={
+              item.watched ||
+              episodeState[`${seasonId}-${item.episode}`]?.watched
+            }
             width={width}
             onPressHandler={() =>
               onPressHandler(
                 seasonId,
                 item.episode,
                 item.title,
-                parseInt(item.released.split('-')[0] || '0', 10)
+                parseInt(item.released.split('-')[0] || '0', 10),
               )
             }
           />
-        )
+        ),
       )}
     </ScrollView>
   );
 };
 
-const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectionsProps) => {
-  const navigation = useNavigation<DrawerNavigationProp<MovieDrawerParamList>>();
+const SeriesSections = ({
+  numberOfSeasons,
+  imdbId,
+  title,
+  poster,
+}: SeriesSectionsProps) => {
+  const navigation =
+    useNavigation<DrawerNavigationProp<MovieDrawerParamList>>();
   const dimensions = useWindowDimensions();
   const seasonNames: Array<string> = useMemo(() => {
     const names = [];
@@ -134,8 +147,6 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectio
     return names;
   }, [numberOfSeasons]);
   const tableOfContentsRef = useRef<FlatList>(null);
-  const sectionCardRef = useRef<FlatList>(null);
-  const visibleIndex = useSharedValue(0);
   const [selectedSeason, setSelectedSeason] = useState(0);
   const [episodeState, setEpisodeState] = useState<EpisodeState>({});
   const [isNewlyWatched, setIsNewlyWatched] = useState(false);
@@ -144,8 +155,7 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectio
     .direction(Directions.RIGHT)
     .onEnd(() => {
       if (selectedSeason !== 0) {
-        visibleIndex.value = visibleIndex.value - 1;
-        runOnJS(setSelectedSeason)(visibleIndex.value);
+        runOnJS(setSelectedSeason)(selectedSeason - 1);
       }
     });
 
@@ -153,8 +163,7 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectio
     .direction(Directions.LEFT)
     .onEnd(() => {
       if (selectedSeason !== parseInt(numberOfSeasons, 10) - 1) {
-        visibleIndex.value = visibleIndex.value + 1;
-        runOnJS(setSelectedSeason)(visibleIndex.value);
+        runOnJS(setSelectedSeason)(selectedSeason + 1);
       }
     });
 
@@ -174,11 +183,18 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectio
   useFocusEffect(
     useCallback(() => {
       setEpisodeState({});
-    }, [])
+    }, []),
   );
-  console.log('season number', selectedSeason);
+
+  useEffect(() => {
+    tableOfContentsRef?.current?.scrollToIndex({
+      index: selectedSeason,
+      animated: true,
+    });
+  }, [selectedSeason]);
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <View style={styles.buttonWrapper}>
         {isNewlyWatched ? (
           <CustomButton
@@ -199,12 +215,11 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectio
         horizontal
         showsHorizontalScrollIndicator={false}
         data={seasonNames}
-        renderItem={({ item, index }) => (
+        renderItem={({item, index}) => (
           <ContentsElement
             index={index}
             item={item}
-            visibleIndex={visibleIndex}
-            sectionCardsRef={sectionCardRef}
+            selectedSeason={selectedSeason}
             setSelectedSeason={setSelectedSeason}
           />
         )}
@@ -217,14 +232,13 @@ const SeriesSections = ({ numberOfSeasons, imdbId, title, poster }: SeriesSectio
             minHeight: dimensions.height - 50,
             // maxHeight: dimensions.height - 50,
             flex: 1,
-          }}
-        >
+          }}>
           <Episodes
             seasonId={selectedSeason + 1}
             imdbId={imdbId}
             width={dimensions.width}
             onPressHandler={(season, episode, title, year) => {
-              setEpisodeState((prev) => ({
+              setEpisodeState(prev => ({
                 ...prev,
                 [`${season}-${episode}`]: {
                   watched: !prev[`${season}-${episode}`]?.watched,

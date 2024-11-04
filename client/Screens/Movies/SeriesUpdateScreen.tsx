@@ -62,6 +62,7 @@ const SeriesUpdateScreen = ({
         renderItem={({ item, index }) => (
           <EpisodeTile
             {...item}
+            date={new Date(item.watchedTime)}
             onRatingUpdate={(value) => {
               setEpisodeData((prev) => {
                 const updated = [...prev];
@@ -69,6 +70,15 @@ const SeriesUpdateScreen = ({
                 return updated;
               });
             }}
+            onDateChange={
+              (value) => {
+              setEpisodeData((prev) => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], watchedTime: value.toISOString() };
+                return updated;
+              });
+            }
+            }
           />
         )}
       />

@@ -1,15 +1,21 @@
-import { useGetTrackedMovies } from '../../api/movies/getTrackedMovies';
+import {useGetTrackedMovies} from '../../api/movies/getTrackedMovies';
 import TrackedMovie from '../../components/TrackedMovie';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { useRefreshOnFocus } from '../../hooks/useRefreshOnFocus';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
+import {useRefreshOnFocus} from '../../hooks/useRefreshOnFocus';
+import React, {useEffect, useState} from 'react';
+import {FlatList, Pressable, StatusBar, StyleSheet, View} from 'react-native';
+import {
+  FONT_FAMILY,
+  FONT_SIZE,
+  SURFACE_COLORS,
+  TEXT_COLORS,
+} from '../../constants/styles';
 import MenuButton from '../../components/MenuButton';
-import { ContentType } from '../../constants/enums';
-import { DrawerScreenProps } from '@react-navigation/drawer';
-import { MovieDrawerParamList } from '../../navigation/MovieNavigator';
+import {ContentType} from '../../constants/enums';
+import {DrawerScreenProps} from '@react-navigation/drawer';
+import {MovieDrawerParamList} from '../../navigation/MovieNavigator';
 import Loader from '../../components/Loader';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 
 export type MovieData =
   | {
@@ -26,14 +32,17 @@ export type MovieData =
       type: ContentType;
       key: string;
     }
-  | { header: true; title: string; key: string; isLast: boolean };
+  | {header: true; title: string; key: string; isLast: boolean};
 
-const HomeScreen = ({ navigation }: DrawerScreenProps<MovieDrawerParamList, 'Home'>) => {
+const HomeScreen = ({
+  navigation,
+}: DrawerScreenProps<MovieDrawerParamList, 'Home'>) => {
   const [moviesData, setMoviesData] = useState<Array<MovieData>>([]);
   const [headerIndices, setHeaderIndices] = useState<Array<number>>([0]);
-  //   const router = useRouter();
 
-  const { data, fetchNextPage, refetch, hasNextPage } = useGetTrackedMovies({ page_size: 15 });
+  const {data, fetchNextPage, refetch, hasNextPage} = useGetTrackedMovies({
+    page_size: 15,
+  });
 
   useRefreshOnFocus(refetch);
   useEffect(() => {
@@ -42,10 +51,12 @@ const HomeScreen = ({ navigation }: DrawerScreenProps<MovieDrawerParamList, 'Hom
         result: Array<MovieData> = [];
       let lastMonth = '';
       data.pages
-        .flatMap((value) => value.response, [data])
+        .flatMap(value => value.response, [data])
         .forEach((value, index) => {
           const watchedDate = new Date(value.watched_date),
-            currentMonth = watchedDate.toLocaleDateString('en-IN', { month: 'long' }).toUpperCase();
+            currentMonth = watchedDate
+              .toLocaleDateString('en-IN', {month: 'long'})
+              .toUpperCase();
           if (lastMonth !== currentMonth) {
             if (index) {
               updatedHeaderIndices.push(result.length + 1);
@@ -82,6 +93,11 @@ const HomeScreen = ({ navigation }: DrawerScreenProps<MovieDrawerParamList, 'Hom
   }, [data]);
   return (
     <View style={styles.wrapper}>
+      <FocusAwareStatusBar
+        translucent
+        backgroundColor={'transparent'}
+        barStyle="light-content"
+      />
       <View style={styles.header}>
         <MenuButton />
         <Pressable hitSlop={10} onPress={() => navigation.navigate('Search')}>
@@ -99,16 +115,16 @@ const HomeScreen = ({ navigation }: DrawerScreenProps<MovieDrawerParamList, 'Hom
             </View>
           ) : null
         }
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <TrackedMovie
             {...item}
             key={item.key}
             onPressHandler={(id, type) => {
-              navigation.navigate('Movie', { id, type });
+              navigation.navigate('Movie', {id, type});
             }}
           />
         )}
-        keyExtractor={(item) => item.key}
+        keyExtractor={item => item.key}
         onEndReachedThreshold={0.5}
         onEndReached={() => {
           fetchNextPage();
@@ -123,6 +139,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     backgroundColor: SURFACE_COLORS.PAGE,
+    paddingTop: StatusBar.currentHeight,
   },
   header: {
     height: 60,

@@ -10,9 +10,11 @@ interface IEpisodeTileProps {
   episode: number;
   rating: number;
   title: string;
+  date: Date;
+  onDateChange: (date: Date) => void;
   onRatingUpdate: (value: number) => void;
 }
-const EpisodeTile = ({ season, episode, title, onRatingUpdate, rating }: IEpisodeTileProps) => {
+const EpisodeTile = ({ season, episode, title, onRatingUpdate, rating, date,onDateChange }: IEpisodeTileProps) => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.square}>
@@ -24,7 +26,7 @@ const EpisodeTile = ({ season, episode, title, onRatingUpdate, rating }: IEpisod
         {title}
       </Text>
       <StarRating value={rating} onChange={onRatingUpdate} size={14} />
-      <DateTimeSelector />
+      <DateTimeSelector date={date} onChange={onDateChange}/>
     </View>
   );
 };

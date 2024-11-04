@@ -1,19 +1,23 @@
 import React from 'react';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+
 import Text from '../Text';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { FONT_SIZE, TEXT_COLORS } from '../../constants/styles';
 
 type datePickerMode = 'date' | 'time';
 
-const DateTimeSelector = () => {
-  const [watchDate, setWatchedDate] = useState(new Date());
+type DateTimeSelectorProps = {
+  date: Date;
+  onChange: (date: Date) => void;
+}
+
+const DateTimeSelector = ({date,onChange}:DateTimeSelectorProps) => {
   const showMode = (currentMode: datePickerMode) => {
     DateTimePickerAndroid.open({
-      value: watchDate,
-      onChange: (_, date) => {
-        date && setWatchedDate(date);
+      value: date,
+      onChange: (_, updatedDate) => {
+        updatedDate && onChange(updatedDate);
       },
       mode: currentMode,
       is24Hour: false,
@@ -24,7 +28,7 @@ const DateTimeSelector = () => {
       <View style={styles.dateTimePressableWrapper}>
         <Pressable onPress={() => showMode('date')} style={styles.datePressable}>
           <Text style={styles.dateText}>
-            {watchDate.toLocaleDateString('en-IN', {
+            {date.toLocaleDateString('en-IN', {
               day: 'numeric',
               month: 'short',
             })}
@@ -32,7 +36,7 @@ const DateTimeSelector = () => {
         </Pressable>
         <Pressable onPress={() => showMode('time')} style={styles.datePressable}>
           <Text style={styles.dateText}>
-            {watchDate.toLocaleTimeString('en-IN', {
+            {date.toLocaleTimeString('en-IN', {
               hour: '2-digit',
               minute: '2-digit',
             })}

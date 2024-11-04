@@ -1,23 +1,28 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import Text from '../components/Text';
-import { FONT_FAMILY, FONT_SIZE, SURFACE_COLORS } from '../constants/styles';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
+import {FONT_FAMILY, FONT_SIZE, SURFACE_COLORS} from '../constants/styles';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../navigation/RootNavigator';
+import FocusAwareStatusBar from '../components/FocusAwareStatusBar';
 
-const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+const HomeScreen = ({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
   return (
     <View style={styles.wrapper}>
+      <FocusAwareStatusBar
+        backgroundColor={SURFACE_COLORS.PAGE}
+        barStyle="light-content"
+      />
       <Pressable
         style={[styles.chipWrapper, styles.coralRed]}
-        onPress={() => navigation.navigate('MovieRoot')}
-      >
+        onPress={() => navigation.navigate('MovieRoot')}>
         <Text style={styles.content}>Movies</Text>
       </Pressable>
       <Pressable
         style={[styles.chipWrapper, styles.springGreen]}
-        onPress={() => navigation.navigate('ExpenseTrackerRoot')}
-      >
+        onPress={() => navigation.navigate('ExpenseTrackerRoot')}>
         <Text style={styles.content}>Expense tracker</Text>
       </Pressable>
     </View>
@@ -55,8 +60,8 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILY.GT_WALSHEIM_PRO_BOLD,
     textAlign: 'center',
   },
-  coralRed: { backgroundColor: '#FF6B6B' },
-  springGreen: { backgroundColor: '#0b8a4b' },
+  coralRed: {backgroundColor: '#FF6B6B'},
+  springGreen: {backgroundColor: '#0b8a4b'},
 });
 
 export default HomeScreen;

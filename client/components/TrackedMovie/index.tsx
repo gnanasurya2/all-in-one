@@ -2,19 +2,23 @@ import React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useMemo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { BORDERS_COLORS, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
+import {useMemo} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
+import {
+  BORDERS_COLORS,
+  SURFACE_COLORS,
+  TEXT_COLORS,
+} from '../../constants/styles';
 import PosterImage from '../PosterImage';
 import Text from '../Text';
 // import { MovieData } from '../../app/(app)/movies';
-import { ContentType } from '../../constants/enums';
-import { MovieData } from '../../Screens/Movies/HomeScreen';
+import {ContentType} from '../../constants/enums';
+import {MovieData} from '../../Screens/Movies/HomeScreen';
 
 type ITrackedMovieProps = MovieData & {
   onPressHandler: (id: string, type: ContentType) => void;
 };
-const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
+const TrackedMovie = ({onPressHandler, ...props}: ITrackedMovieProps) => {
   const currentRating = useMemo(() => {
     if (props.header) {
       return [];
@@ -48,11 +52,10 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
         <PosterImage url={props.poster} width={34} height={50} />
         <View
           style={[
-            { flex: 1, height: 60, justifyContent: 'center' },
+            styles.contentWrapper,
             props.isLast ? {} : styles.titleViewBorder,
-          ]}
-        >
-          <View style={[styles.titleView]}>
+          ]}>
+          <View style={styles.titleView}>
             <View style={styles.titleWrapper}>
               <Text style={styles.movieTitleText}>{props.title}</Text>
               <Text style={styles.yearText}>{props.year}</Text>
@@ -66,7 +69,13 @@ const TrackedMovie = ({ onPressHandler, ...props }: ITrackedMovieProps) => {
                   color={SURFACE_COLORS.SUCCESS}
                 />
               ))}
-              {props.liked && <FontAwesome name={'heart'} size={10} style={styles.likedIcon} />}
+              {props.liked && (
+                <FontAwesome
+                  name={'heart'}
+                  size={10}
+                  style={styles.likedIcon}
+                />
+              )}
               {props.rewatch ? (
                 <MaterialCommunityIcons
                   name="repeat-variant"
@@ -101,6 +110,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 14,
   },
+  contentWrapper: {flex: 1, height: 60, justifyContent: 'center'},
   dayView: {
     borderWidth: 1,
     borderRadius: 4,
@@ -126,15 +136,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: BORDERS_COLORS.SECONDARY,
   },
-  starView: { flexDirection: 'row', marginTop: 2, alignItems: 'center' },
+  starView: {flexDirection: 'row', marginTop: 2, alignItems: 'center'},
   titleWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
     paddingRight: 8,
+    justifyContent: 'space-between',
   },
-  movieTitleText: { fontWeight: 'bold' },
-  yearText: { marginHorizontal: 8, color: TEXT_COLORS.BODY_L2 },
-  likedIcon: { marginHorizontal: 4, alignSelf: 'center', color: SURFACE_COLORS.BRIGHT_ORANGE },
-  seriesIcon: { alignSelf: 'center', marginHorizontal: 4, color: SURFACE_COLORS.INFORMATION },
+  movieTitleText: {fontWeight: 'bold', flex: 1},
+  yearText: {marginHorizontal: 8, color: TEXT_COLORS.BODY_L2},
+  likedIcon: {
+    marginHorizontal: 4,
+    alignSelf: 'center',
+    color: SURFACE_COLORS.BRIGHT_ORANGE,
+  },
+  seriesIcon: {
+    alignSelf: 'center',
+    marginHorizontal: 4,
+    color: SURFACE_COLORS.INFORMATION,
+  },
 });
 export default TrackedMovie;

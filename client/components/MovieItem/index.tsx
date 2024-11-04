@@ -6,9 +6,10 @@ import {
   Pressable,
   ImageBackground,
   Image,
+  StatusBar,
 } from 'react-native';
 import Text from '../Text';
-import { FONT_FAMILY } from '../../constants/styles';
+import {FONT_FAMILY} from '../../constants/styles';
 
 interface MovieItemProps {
   title: string;
@@ -16,13 +17,20 @@ interface MovieItemProps {
   onPressHandler: () => void;
 }
 
-const MovieItem = ({ title, poster, onPressHandler }: MovieItemProps) => {
-  const { width, height } = useWindowDimensions();
+const MovieItem = ({title, poster, onPressHandler}: MovieItemProps) => {
+  const {width, height} = useWindowDimensions();
   return (
-    <View style={[styles.wrapper, { width, height: height - 80 }]}>
-      <ImageBackground source={{ uri: poster }} style={styles.image} blurRadius={10}>
+    <View
+      style={[
+        styles.wrapper,
+        {width, height: height + (StatusBar?.currentHeight || 0)},
+      ]}>
+      <ImageBackground
+        source={{uri: poster}}
+        style={styles.image}
+        blurRadius={16}>
         <Pressable style={styles.card} onPress={onPressHandler}>
-          <Image style={styles.imageStyles} source={{ uri: poster }} />
+          <Image style={styles.imageStyles} source={{uri: poster}} />
           <Text style={styles.movieTitle}>{title}</Text>
         </Pressable>
       </ImageBackground>
@@ -40,17 +48,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: '#33CCCC',
+    backgroundColor: '#33CCCC21',
     padding: 16,
     borderRadius: 12,
-    elevation: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imageStyles: { aspectRatio: 0.67, width: 160, borderRadius: 8 },
+  imageStyles: {aspectRatio: 0.67, width: 160, borderRadius: 8},
   movieTitle: {
     fontFamily: FONT_FAMILY.GT_WALSHEIM_PRO_BOLD,
-    color: 'black',
+    color: 'white',
     fontSize: 20,
     marginVertical: 8,
     maxWidth: 280,

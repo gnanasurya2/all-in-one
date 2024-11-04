@@ -1,7 +1,12 @@
 import React from 'react';
 import {StyleSheet, View, Pressable} from 'react-native';
 import {SerchMovieResult} from '../../api/movies';
-import {FONT_SIZE, SURFACE_COLORS, TEXT_COLORS, FONT_WEIGHT} from '../../constants/styles';
+import {
+  FONT_SIZE,
+  SURFACE_COLORS,
+  TEXT_COLORS,
+  FONT_WEIGHT,
+} from '../../constants/styles';
 import Text from '../Text';
 import PosterImage from '../PosterImage';
 
@@ -9,7 +14,14 @@ interface MovieSearchResultProps extends SerchMovieResult {
   onPressHandler: (id: string, Type: string) => void;
 }
 
-export const MovieSearchResult = ({Title, Poster, Year, onPressHandler, imdbID, Type}: MovieSearchResultProps) => {
+export const MovieSearchResult = ({
+  Title,
+  Poster,
+  Year,
+  onPressHandler,
+  imdbID,
+  Type,
+}: MovieSearchResultProps) => {
   return (
     <Pressable
       style={styles.wrapper}
@@ -19,7 +31,7 @@ export const MovieSearchResult = ({Title, Poster, Year, onPressHandler, imdbID, 
       <View style={styles.textWrapper}>
         <Text style={styles.title}>
           {Title}
-          <Text style={styles.year}>,{Year}</Text>
+          <Text style={styles.year}> ,{Year}</Text>
         </Text>
       </View>
     </Pressable>
