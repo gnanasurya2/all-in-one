@@ -1,22 +1,25 @@
-import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { useMovieLists } from '../../api/movies/getMovieLists';
+import React, {useMemo} from 'react';
+import {FlatList, StyleSheet, View} from 'react-native';
+import {useMovieLists} from '../../api/movies/getMovieLists';
 import MovieList from '../../components/MovieList';
 import Separator from '../../components/Separator';
-import { SURFACE_COLORS } from '../../constants/styles';
-import { useAddMovieToList } from '../../api/movies/addMovieToList';
-import { MovieDrawerParamList } from '../../navigation/MovieNavigator';
-import { DrawerScreenProps } from '@react-navigation/drawer';
+import {SURFACE_COLORS} from '../../constants/styles';
+import {useAddMovieToList} from '../../api/movies/addMovieToList';
+import {MovieDrawerParamList} from '../../navigation/MovieNavigator';
+import {DrawerScreenProps} from '@react-navigation/drawer';
 
 const ViewListsScreen = ({
   navigation,
   route: {
-    params: { imdbId, title, poster },
+    params: {imdbId, title, poster},
   },
 }: DrawerScreenProps<MovieDrawerParamList, 'ViewList'>) => {
-  const { data, fetchNextPage } = useMovieLists();
+  const {data, fetchNextPage} = useMovieLists();
 
-  const movieLists = useMemo(() => data?.pages.flatMap((value) => value.response), [data]);
+  const movieLists = useMemo(
+    () => data?.pages.flatMap(value => value.response),
+    [data],
+  );
 
   const mutateLists = useAddMovieToList();
 
@@ -24,11 +27,11 @@ const ViewListsScreen = ({
     <View style={styles.wrapper}>
       <FlatList
         data={movieLists}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <MovieList
             description={item.description}
             title={item.title}
-            numberOfFilms={10}
+            numberOfFilms={item.number_of_items}
             onPressHandler={async () => {
               await mutateLists.mutateAsync({
                 list_ids: [item.id],
@@ -40,8 +43,10 @@ const ViewListsScreen = ({
             }}
           />
         )}
-        ItemSeparatorComponent={() => <Separator style={{ marginHorizontal: 0 }} />}
-        keyExtractor={(item) => item.id.toString()}
+        ItemSeparatorComponent={() => (
+          <Separator style={{marginHorizontal: 0}} />
+        )}
+        keyExtractor={item => item.id.toString()}
         onEndReachedThreshold={0.5}
         onEndReached={() => {
           fetchNextPage();

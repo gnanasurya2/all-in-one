@@ -28,5 +28,6 @@
 **/values.dev.yaml
 /bin
 /target
+/migration/target
 LICENSE
 README.md

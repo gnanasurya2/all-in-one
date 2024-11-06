@@ -19,12 +19,9 @@ interface MovieItemProps {
 
 const MovieItem = ({title, poster, onPressHandler}: MovieItemProps) => {
   const {width, height} = useWindowDimensions();
+
   return (
-    <View
-      style={[
-        styles.wrapper,
-        {width, height: height + (StatusBar?.currentHeight || 0)},
-      ]}>
+    <View style={{width, height: height + (StatusBar?.currentHeight || 0)}}>
       <ImageBackground
         source={{uri: poster}}
         style={styles.image}
@@ -39,9 +36,6 @@ const MovieItem = ({title, poster, onPressHandler}: MovieItemProps) => {
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: 'red',
-  },
   image: {
     flex: 1,
     justifyContent: 'center',

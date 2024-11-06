@@ -1,12 +1,16 @@
 use crate::{
     database::{
+        lists,
         movie_lists::{self, ActiveModel, Column},
-        prelude::MovieLists,
+        prelude::{Lists, MovieLists},
     },
     utils::app_error::AppError,
 };
 use axum::{http::StatusCode, Extension, Json};
-use sea_orm::{sea_query::OnConflict, DatabaseConnection, EntityTrait, Set};
+use migration::Expr;
+use sea_orm::{
+    sea_query::OnConflict, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -47,6 +51,22 @@ pub async fn add_movie_to_lists(
         .await
         .map_err(|err| {
             print!("err {:?}", err);
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "error while adding to db",
+            )
+        })?;
+
+    Lists::update_many()
+        .col_expr(
+            lists::Column::NumberOfItems,
+            Expr::col(lists::Column::NumberOfItems).add(1),
+        )
+        .filter(lists::Column::Id.is_in(request_payload.list_ids))
+        .exec(&database)
+        .await
+        .map_err(|err| {
+            print!("updating list count err {:?}", err);
             AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "error while adding to db",

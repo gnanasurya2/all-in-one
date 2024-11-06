@@ -1,9 +1,17 @@
-import React, { useEffect, useMemo } from 'react';
+import React, {useMemo} from 'react';
 import Text from '../Text';
-import { StyleSheet, Pressable, View } from 'react-native';
-import { BORDERS_COLORS, FONT_FAMILY, SURFACE_COLORS, TEXT_COLORS } from '../../constants/styles';
-import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import {StyleSheet, Pressable, View} from 'react-native';
+import {
+  BORDERS_COLORS,
+  FONT_FAMILY,
+  SURFACE_COLORS,
+  TEXT_COLORS,
+} from '../../constants/styles';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import RightSwipeActions from './RightSwipeAction';
 interface TranscationProps {
   isIncome: boolean;
@@ -13,14 +21,24 @@ interface TranscationProps {
   category: string;
 }
 
-const Transcation = ({ isIncome, title, date, amount, category }: TranscationProps) => {
+const Transcation = ({
+  isIncome,
+  title,
+  date,
+  amount,
+  category,
+}: TranscationProps) => {
   const [formattedDate, formattedTime, formattedAmount] = useMemo(() => {
     const finaldate = new Date(date).toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
     });
     const formattedTime = new Date(date)
-      .toLocaleTimeString('en-IN', { hour12: true, hour: '2-digit', minute: '2-digit' })
+      .toLocaleTimeString('en-IN', {
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit',
+      })
       .toUpperCase();
     const formattedAmount = new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -47,9 +65,9 @@ const Transcation = ({ isIncome, title, date, amount, category }: TranscationPro
         }}
         onSwipeableClose={() => {
           isHideBorderRadius.value = false;
-        }}
-      >
-        <Pressable style={{ backgroundColor: SURFACE_COLORS.PAGE, borderRadius: 12 }}>
+        }}>
+        <Pressable
+          style={{backgroundColor: SURFACE_COLORS.PAGE, borderRadius: 12}}>
           <View style={styles.titleWrapper}>
             <Text style={styles.titleText}>{title}</Text>
             <View style={styles.dateWrapper}>
@@ -58,7 +76,11 @@ const Transcation = ({ isIncome, title, date, amount, category }: TranscationPro
             </View>
           </View>
           <View style={styles.transcationWrapper}>
-            <Text style={[styles.money, isIncome ? styles.incomeText : styles.expenseText]}>
+            <Text
+              style={[
+                styles.money,
+                isIncome ? styles.incomeText : styles.expenseText,
+              ]}>
               {isIncome ? '+' : '-'} {formattedAmount}
             </Text>
             <View style={styles.category}>

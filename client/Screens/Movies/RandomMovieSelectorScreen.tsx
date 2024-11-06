@@ -6,16 +6,14 @@ import {
 import Loader from '../../components/Loader';
 import MovieItem from '../../components/MovieItem';
 import {SURFACE_COLORS} from '../../constants/styles';
-// import { router } from 'expo-router';
 import {useEffect, useState} from 'react';
 import {StyleSheet, View, useWindowDimensions} from 'react-native';
 import Animated, {
   Easing,
-  interpolate,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withRepeat,
+  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import {MovieDrawerParamList} from '../../navigation/MovieNavigator';
@@ -27,6 +25,8 @@ import {
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
+
+const MOVIE_FRAME_TIME = 100;
 
 const RandomMovieSeletorScreen = ({
   navigation,
@@ -44,9 +44,8 @@ const RandomMovieSeletorScreen = ({
     if (data?.pages) {
       const flattenedData = data.pages.flatMap(value => value.response, [data]);
       setWatchlistMovies(flattenedData);
-      translateX.value = ((flattenedData.length - 1) / 2) * width;
     }
-  }, [data, translateX, width]);
+  }, [data, width]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -56,31 +55,40 @@ const RandomMovieSeletorScreen = ({
         },
       ],
     };
-  }, [watchlistMovies.length]);
+  });
 
   const spinPressHandler = () => {
-    let halfItemValue = (watchlistMovies.length - 1) / 2;
-    translateX.value = halfItemValue * width;
-    translateX.value = withRepeat(
-      withTiming(-translateX.value, {
-        duration: watchlistMovies.length * 150,
+    if (watchlistMovies.length === 1) {
+      return 1;
+    }
+
+    const currentIndex = Math.round(Math.abs(translateX.value) / width);
+    let randomIndex = Math.floor(Math.random() * watchlistMovies.length);
+
+    console.log('change', currentIndex, randomIndex);
+
+    while (randomIndex === currentIndex) {
+      randomIndex = Math.floor(Math.random() * watchlistMovies.length);
+    }
+
+    if (currentIndex < randomIndex) {
+      translateX.value = withTiming(-randomIndex * width, {
+        duration: (randomIndex - currentIndex) * MOVIE_FRAME_TIME,
         easing: Easing.linear,
-      }),
-      1,
-      false,
-      () => {
-        const interpolatedNumber = interpolate(
-          Math.floor(Math.random() * watchlistMovies.length),
-          [0, watchlistMovies.length - 1],
-          [halfItemValue * width, -halfItemValue * width],
-        );
-        translateX.value = halfItemValue * width;
-        translateX.value = withTiming(interpolatedNumber, {
-          duration: watchlistMovies.length * 150,
+      });
+    } else {
+      translateX.value = withSequence(
+        withTiming(-(watchlistMovies.length * width), {
+          duration: (watchlistMovies.length - currentIndex) * MOVIE_FRAME_TIME,
           easing: Easing.linear,
-        });
-      },
-    );
+        }),
+        withTiming(0, {duration: 0, easing: Easing.steps(1)}),
+        withTiming(-randomIndex * width, {
+          duration: randomIndex * MOVIE_FRAME_TIME,
+          easing: Easing.linear,
+        }),
+      );
+    }
   };
 
   const flingGesture = Gesture.Fling()
@@ -124,8 +132,7 @@ const RandomMovieSeletorScreen = ({
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: SURFACE_COLORS.WARNING,
+    backgroundColor: SURFACE_COLORS.PAGE,
   },
   randomWrapper: {
     flexDirection: 'row',

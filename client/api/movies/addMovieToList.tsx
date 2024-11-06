@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import axios from 'axios';
 
 export interface addMovieToListRequest {
@@ -21,9 +21,15 @@ export const useAddMovieToList = () => {
   const queryClient = useQueryClient();
   const query = useMutation({
     mutationFn: addMovieToList,
-    onSuccess: (_, request) => {
-      queryClient.invalidateQueries({
-        queryKey: ['getMoviesForLists', request.list_ids],
+    onSuccess: async (_, request) => {
+      for (let id of request.list_ids) {
+        await queryClient.invalidateQueries({
+          queryKey: ['getMovieInLists', id],
+        });
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: ['getMovieLists'],
       });
     },
   });

@@ -1,8 +1,7 @@
 import React from 'react';
 import Text from '../Text';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { FONT_FAMILY, FONT_WEIGHT, TEXT_COLORS } from '../../constants/styles';
-import PosterImage from '../PosterImage';
+import {Pressable, StyleSheet, View} from 'react-native';
+import {FONT_FAMILY, FONT_WEIGHT, TEXT_COLORS} from '../../constants/styles';
 
 type MovieListProps = {
   title: string;
@@ -10,13 +9,20 @@ type MovieListProps = {
   description: string;
   onPressHandler: () => void;
 };
-const MovieList = ({ title, numberOfFilms, description, onPressHandler }: MovieListProps) => {
+const MovieList = ({
+  title,
+  numberOfFilms,
+  description,
+  onPressHandler,
+}: MovieListProps) => {
   return (
     <>
       <Pressable style={styles.wrapper} onPress={onPressHandler}>
         <View style={styles.titleWrapper}>
           <Text style={styles.listTitle}>{title}</Text>
-          <Text style={styles.numberStyles}>{numberOfFilms || '0'} films</Text>
+          <Text style={styles.numberStyles}>
+            {numberOfFilms || '0'} {`film${numberOfFilms >= 1 ? 's' : ''} `}
+          </Text>
         </View>
       </Pressable>
       <Pressable style={styles.wrapper} onPress={onPressHandler}>

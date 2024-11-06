@@ -1,6 +1,7 @@
-import { TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import React from 'react';
+import {TouchableOpacity, StyleSheet, Animated} from 'react-native';
 
-const RightSwipeActions = ({ progress, dragX }: { dragX: any; progress: any }) => {
+const RightSwipeActions = ({progress, dragX}: {dragX: any; progress: any}) => {
   const trans = dragX.interpolate({
     inputRange: [0, 100],
     outputRange: [-20, -40],
@@ -14,9 +15,8 @@ const RightSwipeActions = ({ progress, dragX }: { dragX: any; progress: any }) =
       <Animated.Text
         style={[
           styles.text,
-          { transform: [{ translateX: trans }, { scale }, { rotateZ: '180deg' }] },
-        ]}
-      >
+          {transform: [{translateX: trans}, {scale}, {rotateZ: '180deg'}]},
+        ]}>
         Delete
       </Animated.Text>
     </TouchableOpacity>
