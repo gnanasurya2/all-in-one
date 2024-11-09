@@ -7,13 +7,13 @@
 
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import axios from 'axios';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import RootNavigator from './navigation/RootNavigator';
 import {NavigationContainer} from '@react-navigation/native';
 import {SURFACE_COLORS} from './constants/styles';
 import {StyleSheet} from 'react-native';
-import {SessionProvider, useSession} from './context/AuthContext';
+import {SessionProvider} from './context/AuthContext';
 import 'react-native-gesture-handler';
 // process.env.EXPO_PUBLIC_API_URL
 axios.defaults.baseURL = __DEV__
@@ -25,21 +25,6 @@ if (__DEV__) {
 const queryClient = new QueryClient();
 
 function App(): React.JSX.Element {
-  const {signOut} = useSession();
-
-  useEffect(() => {
-    axios.interceptors.response.use(
-      response => response,
-      async error => {
-        const {status} = error.response || {};
-        if (status === 401) {
-          signOut?.();
-        }
-        return Promise.reject(error);
-      },
-    );
-  }, [signOut]);
-
   return (
     <GestureHandlerRootView style={styles.screen}>
       <SessionProvider>

@@ -9,6 +9,14 @@
     "start": "react-native start",
     "test": "jest"
   },
+  "codegenConfig": {
+    "name": "NativeReadSmsSpec",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "android": {
+      "javaPackageName": "com.nativereadsms"
+    }
+  },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.4",
     "@hookform/resolvers": "^3.9.1",

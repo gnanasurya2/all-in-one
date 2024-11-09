@@ -5,7 +5,7 @@ mod hello_world;
 mod movies_tracker;
 mod users;
 
-use axum::routing::{patch, post};
+use axum::routing::{delete, patch, post};
 use axum::{http::Method, routing::get, Router};
 use axum::{middleware, Extension};
 use reqwest::Client;
@@ -13,7 +13,13 @@ use sea_orm::DatabaseConnection;
 use tower_http::cors::{Any, CorsLayer};
 
 use backup::trigger_backup::trigger_backup;
+use expense_tracker::create_new_category::create_new_category;
+use expense_tracker::create_new_expense::create_new_expense;
+use expense_tracker::delete_expense::delete_expense;
+use expense_tracker::get_categories::get_categories;
 use expense_tracker::get_tracked_expense::get_tracked_expense;
+use expense_tracker::update_expense::update_expense;
+
 use guard::guard;
 use hello_world::hello_world;
 use movies_tracker::add_movie_to_lists::add_movie_to_lists;
@@ -63,6 +69,11 @@ pub fn create_routes(database: DatabaseConnection, r2_store: R2Store) -> Router 
         .route("/movies/lists/:list_id", get(get_movie_list))
         .route("/movies/season/:season_id", get(get_season_details))
         .route("/expense/get_tracked", get(get_tracked_expense))
+        .route("/expense/category/create", post(create_new_category))
+        .route("/expense/categories", get(get_categories))
+        .route("/expense/create", post(create_new_expense))
+        .route("/expense/:id", delete(delete_expense))
+        .route("/expense/update_expense", patch(update_expense))
         .route("/user/logout", post(logout))
         .route_layer(middleware::from_fn(guard))
         .route("/hello", get(hello_world))
