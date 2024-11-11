@@ -1,11 +1,12 @@
-import React, {ReactNode} from 'react';
+import React from 'react';
 import {StyleSheet, Text, TextProps} from 'react-native';
 import {FONT_FAMILY} from '../../constants/styles';
 
-interface CustomTextProps extends TextProps {
-  children: ReactNode;
-}
-const CustomText: React.FC<CustomTextProps> = ({style, children, ...props}: CustomTextProps) => {
+const CustomText: React.FC<TextProps> = ({
+  style,
+  children,
+  ...props
+}: TextProps) => {
   return (
     <Text style={[styles.textWrapper, style]} {...props}>
       {children}

@@ -2,6 +2,8 @@
 
 pub mod prelude;
 
+pub mod categories;
+pub mod expense;
 pub mod lists;
 pub mod movie_lists;
 pub mod movies;

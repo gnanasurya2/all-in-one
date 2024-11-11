@@ -1,24 +1,21 @@
 import React, {useMemo} from 'react';
 import Text from '../Text';
-import {StyleSheet, Pressable, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {
   BORDERS_COLORS,
   FONT_FAMILY,
   SURFACE_COLORS,
   TEXT_COLORS,
 } from '../../constants/styles';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
-import RightSwipeActions from './RightSwipeAction';
+import CustomSwipeable from './CustomSwipeable';
 interface TranscationProps {
   isIncome: boolean;
   title: string;
   date: number;
   amount: number;
   category: string;
+  onEditPressed: () => void;
+  onDeletePressed: () => void;
 }
 
 const Transcation = ({
@@ -27,6 +24,8 @@ const Transcation = ({
   date,
   amount,
   category,
+  onEditPressed,
+  onDeletePressed,
 }: TranscationProps) => {
   const [formattedDate, formattedTime, formattedAmount] = useMemo(() => {
     const finaldate = new Date(date).toLocaleDateString('en-US', {
@@ -43,53 +42,38 @@ const Transcation = ({
     const formattedAmount = new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
+      minimumFractionDigits: 0,
     }).format(amount);
     return [finaldate, formattedTime, formattedAmount];
   }, [date, amount]);
 
-  const isHideBorderRadius = useSharedValue(false);
-
-  const animatedBorderRadius = useAnimatedStyle(() => ({
-    borderBottomLeftRadius: isHideBorderRadius.value ? 0 : 12,
-    borderTopLeftRadius: isHideBorderRadius.value ? 0 : 12,
-  }));
-
   return (
-    <Animated.View style={[styles.wrapper, animatedBorderRadius]}>
-      <Swipeable
-        renderRightActions={(progress, dragX) => {
-          return <RightSwipeActions progress={progress} dragX={dragX} />;
-        }}
-        onSwipeableOpenStartDrag={() => {
-          isHideBorderRadius.value = true;
-        }}
-        onSwipeableClose={() => {
-          isHideBorderRadius.value = false;
-        }}>
-        <Pressable
-          style={{backgroundColor: SURFACE_COLORS.PAGE, borderRadius: 12}}>
-          <View style={styles.titleWrapper}>
-            <Text style={styles.titleText}>{title}</Text>
-            <View style={styles.dateWrapper}>
-              <Text style={styles.dateText}>{formattedDate},</Text>
-              <Text style={styles.dateText}> {formattedTime}</Text>
-            </View>
+    <CustomSwipeable
+      containerStyle={styles.wrapper}
+      onRightActionPressed={onEditPressed}
+      onLeftActionPressed={onDeletePressed}>
+      <View style={{backgroundColor: SURFACE_COLORS.PAGE}}>
+        <View style={styles.titleWrapper}>
+          <Text style={styles.titleText}>{title}</Text>
+          <View style={styles.dateWrapper}>
+            <Text style={styles.dateText}>{formattedDate},</Text>
+            <Text style={styles.dateText}> {formattedTime}</Text>
           </View>
-          <View style={styles.transcationWrapper}>
-            <Text
-              style={[
-                styles.money,
-                isIncome ? styles.incomeText : styles.expenseText,
-              ]}>
-              {isIncome ? '+' : '-'} {formattedAmount}
-            </Text>
-            <View style={styles.category}>
-              <Text style={styles.categoryText}>{category}</Text>
-            </View>
+        </View>
+        <View style={styles.transcationWrapper}>
+          <Text
+            style={[
+              styles.money,
+              isIncome ? styles.incomeText : styles.expenseText,
+            ]}>
+            {isIncome ? '+' : '-'} {formattedAmount}
+          </Text>
+          <View style={styles.category}>
+            <Text style={styles.categoryText}>{category}</Text>
           </View>
-        </Pressable>
-      </Swipeable>
-    </Animated.View>
+        </View>
+      </View>
+    </CustomSwipeable>
   );
 };
 
@@ -98,6 +82,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: TEXT_COLORS.BODY_L2,
     fontWeight: '500',
+    textTransform: 'capitalize',
+    paddingRight: 16,
   },
   titleWrapper: {
     paddingHorizontal: 12,
@@ -124,6 +110,7 @@ const styles = StyleSheet.create({
   money: {
     color: TEXT_COLORS.SUCCESS,
     fontFamily: FONT_FAMILY.HELVETICA_ROUNDED,
+    fontWeight: 'bold',
     fontSize: 24,
   },
   incomeText: {

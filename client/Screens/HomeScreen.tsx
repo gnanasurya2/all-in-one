@@ -1,14 +1,30 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import Text from '../components/Text';
 import {FONT_FAMILY, FONT_SIZE, SURFACE_COLORS} from '../constants/styles';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/RootNavigator';
 import FocusAwareStatusBar from '../components/FocusAwareStatusBar';
+import axios from 'axios';
+import {useSession} from '../context/AuthContext';
 
 const HomeScreen = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+  const {signOut} = useSession();
+
+  useEffect(() => {
+    axios.interceptors.response.use(
+      response => response,
+      async error => {
+        const {status} = error.response || {};
+        if (status === 401) {
+          signOut?.();
+        }
+        return Promise.reject(error);
+      },
+    );
+  }, [signOut]);
   return (
     <View style={styles.wrapper}>
       <FocusAwareStatusBar

@@ -12,6 +12,7 @@ mod m20240420_203424_movie_lists_unique_contraint;
 mod m20240420_205023_add_number_of_movies_in_lists;
 mod m20240615_081608_re_watch;
 mod m20240615_130504_series;
+mod m20241108_114354_create_expense_category_table;
 
 pub struct Migrator;
 
@@ -31,6 +32,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240420_205023_add_number_of_movies_in_lists::Migration),
             Box::new(m20240615_081608_re_watch::Migration),
             Box::new(m20240615_130504_series::Migration),
+            Box::new(m20241108_114354_create_expense_category_table::Migration),
         ]
     }
 }
