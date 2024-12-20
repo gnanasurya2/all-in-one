@@ -19,6 +19,7 @@ use crate::utils::type_conversion::i8_to_bool;
 pub struct QueryParams {
     page: u64,
     page_size: u64,
+    r#type: Option<String>,
 }
 
 #[derive(FromQueryResult, Serialize, Deserialize)]
@@ -59,7 +60,7 @@ pub async fn get_watched_movies(
     Extension(user): Extension<AuthData>,
     Query(query): Query<QueryParams>,
 ) -> Result<Json<ResponseWatchedMovies>, AppError> {
-    let tracked_movies: Vec<ResponseTrackedMovie> = Movies::find()
+    let mut tracked_query = Movies::find()
         .select_only()
         .columns([
             movies::Column::Year,
@@ -73,7 +74,13 @@ pub async fn get_watched_movies(
             movies::Column::Type,
         ])
         .filter(movies::Column::UserId.eq(user.id))
-        .filter(movies::Column::Watched.eq(1))
+        .filter(movies::Column::Watched.eq(1));
+
+    if let Some(tracked_type) = query.r#type {
+        tracked_query = tracked_query.filter(movies::Column::Type.eq(tracked_type))
+    }
+
+    let tracked_movies: Vec<ResponseTrackedMovie> = tracked_query
         .order_by_desc(movies::Column::WatchedDate)
         .order_by_desc(movies::Column::Season)
         .order_by_desc(movies::Column::Episode)

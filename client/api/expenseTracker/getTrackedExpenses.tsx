@@ -17,6 +17,16 @@ export interface getTrackedExpensesResponse {
   total_income: number;
 }
 
+export interface formattedExpense {
+  id: number;
+  date: number;
+  dayOfMonth: number;
+  amount: number;
+  title: string;
+  category: string;
+  isIncome: boolean;
+}
+
 async function getTrackedExpenses(month: number, year: number) {
   const response = await axios.get<getTrackedExpensesResponse>(
     '/expense/get_tracked',
@@ -26,14 +36,18 @@ async function getTrackedExpenses(month: number, year: number) {
   );
 
   return {
-    data: response.data.data.map(ele => ({
-      id: ele.id,
-      date: new Date(ele.created_at).getTime(),
-      amount: ele.amount,
-      title: ele.name,
-      category: ele.category,
-      isIncome: ele.type === 'INCOME',
-    })),
+    data: response.data.data.map<formattedExpense>(ele => {
+      const date = new Date(ele.created_at);
+      return {
+        id: ele.id,
+        date: date.getTime(),
+        dayOfMonth: date.getDate(),
+        amount: ele.amount,
+        title: ele.name,
+        category: ele.category,
+        isIncome: ele.type === 'INCOME',
+      };
+    }),
     total_income: response.data.total_income,
     total_expense: response.data.total_expense,
   };

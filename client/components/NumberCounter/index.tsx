@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 import {StyleProp, StyleSheet, TextStyle, View} from 'react-native';
 import Digit from './Digit';
 import DigitText from './DigitText';
@@ -81,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NumberCounter;
+export default memo(NumberCounter);

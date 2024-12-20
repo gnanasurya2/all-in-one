@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import Transcation from '../../components/Transcation';
 import {
@@ -11,7 +11,10 @@ import NativeReadSms from '../../specs/NativeReadSms';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ExpenseTrackerParamList} from '../../navigation/ExpenseTrackerNavigator';
-import {useGetTrackedExpenses} from '../../api/expenseTracker/getTrackedExpenses';
+import {
+  formattedExpense,
+  useGetTrackedExpenses,
+} from '../../api/expenseTracker/getTrackedExpenses';
 import Loader from '../../components/Loader';
 import {useDeleteExpense} from '../../api/expenseTracker/deleteExpense';
 import NumberCounter from '../../components/NumberCounter';
@@ -22,6 +25,12 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import {runOnJS} from 'react-native-reanimated';
+import ExpenseCalender from '../../components/ExpenseCalender';
+import {changeMonth} from '../../utils/changeMonth';
+
+const FooterComponent = () => {
+  return <View style={styles.footer} />;
+};
 
 const HomeScreen = ({
   navigation,
@@ -30,6 +39,7 @@ const HomeScreen = ({
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
   });
+  const [isCalenderOpen, setIsCalenderOpen] = useState(false);
 
   const {data, isLoading} = useGetTrackedExpenses(currentMonth);
   const {mutateAsync: deleteExpenseAync} = useDeleteExpense(
@@ -42,7 +52,7 @@ const HomeScreen = ({
     console.log(
       'has permission',
       NativeReadSms.hasSmsPermission(),
-      NativeReadSms.readSms(1730797160275, ['CUBANK']),
+      NativeReadSms.readSms(1730797160275, ['CUBANK']).length,
     );
   }, []);
 
@@ -57,27 +67,45 @@ const HomeScreen = ({
     [currentMonth],
   );
 
-  const rightGesture = Gesture.Fling()
-    .direction(Directions.RIGHT)
-    .onEnd(() => {
-      runOnJS(setCurrentMonth)({
-        month: currentMonth.month === 0 ? 12 : currentMonth.month - 1,
-        year:
-          currentMonth.month === 0 ? currentMonth.year - 1 : currentMonth.year,
+  const composed = useMemo(() => {
+    const rightGesture = Gesture.Fling()
+      .direction(Directions.RIGHT)
+      .onEnd(() => {
+        runOnJS(setCurrentMonth)({
+          month: currentMonth.month === 0 ? 12 : currentMonth.month - 1,
+          year:
+            currentMonth.month === 0
+              ? currentMonth.year - 1
+              : currentMonth.year,
+        });
       });
-    });
 
-  const leftGesture = Gesture.Fling()
-    .direction(Directions.LEFT)
-    .onEnd(() => {
-      runOnJS(setCurrentMonth)({
-        month: currentMonth.month === 12 ? 1 : currentMonth.month + 1,
-        year:
-          currentMonth.month === 12 ? currentMonth.year + 1 : currentMonth.year,
+    const leftGesture = Gesture.Fling()
+      .direction(Directions.LEFT)
+      .onEnd(() => {
+        runOnJS(setCurrentMonth)({
+          month: currentMonth.month === 12 ? 1 : currentMonth.month + 1,
+          year:
+            currentMonth.month === 12
+              ? currentMonth.year + 1
+              : currentMonth.year,
+        });
       });
-    });
+    return Gesture.Simultaneous(rightGesture, leftGesture);
+  }, [currentMonth]);
 
-  const composed = Gesture.Simultaneous(rightGesture, leftGesture);
+  const keyExtractor = useCallback(({id}: {id: number}) => id.toString(), []);
+
+  const renderItem = useCallback(
+    ({item}: {item: formattedExpense}) => (
+      <Transcation
+        {...item}
+        onEditPressed={() => navigation.navigate('Create', {data: {...item}})}
+        onDeletePressed={async () => await deleteExpenseAync(item.id)}
+      />
+    ),
+    [deleteExpenseAync, navigation],
+  );
 
   return (
     <View style={styles.wrapper}>
@@ -85,7 +113,22 @@ const HomeScreen = ({
         backgroundColor={SURFACE_COLORS.PAGE}
         barStyle="light-content"
       />
-      <Text style={styles.text}>{formattedDate}</Text>
+      <Pressable
+        onPressIn={() => {
+          console.log('pressed');
+          setIsCalenderOpen(true);
+        }}>
+        <Text style={styles.text}>{formattedDate}</Text>
+      </Pressable>
+      <ExpenseCalender
+        isOpen={isCalenderOpen}
+        date={currentMonth}
+        data={data?.data}
+        handleClose={() => setIsCalenderOpen(false)}
+        changeMonth={dir => {
+          setCurrentMonth(prev => changeMonth(prev, dir));
+        }}
+      />
       <GestureDetector gesture={composed}>
         <View style={styles.textWrapper}>
           <View style={styles.rowWrapper}>
@@ -94,7 +137,7 @@ const HomeScreen = ({
               value={data?.total_expense || 0}
               maxFontSize={40}
               fontSizeMultiplier={1.6}
-              textStyle={{color: TEXT_COLORS.ERROR}}
+              textStyle={styles.errorText}
             />
           </View>
           <View style={styles.rowWrapper}>
@@ -103,7 +146,7 @@ const HomeScreen = ({
               value={data?.total_income || 0}
               maxFontSize={40}
               fontSizeMultiplier={1.6}
-              textStyle={{color: TEXT_COLORS.SUCCESS}}
+              textStyle={styles.successText}
             />
           </View>
         </View>
@@ -119,17 +162,9 @@ const HomeScreen = ({
         <FlatList
           data={data?.data}
           style={styles.list}
-          keyExtractor={({id}) => id.toString()}
-          ListFooterComponent={<View style={styles.footer} />}
-          renderItem={({item}) => (
-            <Transcation
-              {...item}
-              onEditPressed={() =>
-                navigation.navigate('Create', {data: {...item}})
-              }
-              onDeletePressed={async () => await deleteExpenseAync(item.id)}
-            />
-          )}
+          keyExtractor={keyExtractor}
+          ListFooterComponent={FooterComponent}
+          renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />
       ) : (
@@ -175,5 +210,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILY.GT_WALSHEIM_PRO_BOLD,
   },
   footer: {marginBottom: 16},
+  errorText: {color: TEXT_COLORS.ERROR},
+  successText: {color: TEXT_COLORS.SUCCESS},
 });
 export default HomeScreen;

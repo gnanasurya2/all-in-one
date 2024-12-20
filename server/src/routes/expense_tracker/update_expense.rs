@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
 use axum::{Extension, Json};
+use chrono::{TimeZone, Utc};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter, Set};
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +17,7 @@ pub struct RequestUpdateExpense {
     amount: f32,
     r#type: String,
     category_id: i32,
+    created_at: i64,
 }
 
 #[derive(Serialize)]
@@ -40,10 +42,13 @@ pub async fn update_expense(
         return Err(AppError::new(StatusCode::NOT_FOUND, "Expense not found"));
     };
 
+    let created_date = Utc.timestamp_opt(request_body.created_at, 0).unwrap();
+
     updated_expense.amount = Set(request_body.amount);
     updated_expense.category_id = Set(request_body.category_id);
     updated_expense.name = Set(Some(request_body.name));
     updated_expense.r#type = Set(request_body.r#type);
+    updated_expense.created_at = Set(Some(created_date));
 
     let new_expense = Expense::update(updated_expense)
         .filter(expense::Column::Id.eq(request_body.id))

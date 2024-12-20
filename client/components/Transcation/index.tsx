@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {memo, useMemo} from 'react';
 import Text from '../Text';
 import {StyleSheet, View} from 'react-native';
 import {
@@ -138,4 +138,4 @@ const styles = StyleSheet.create({
     backgroundColor: SURFACE_COLORS.PAGE,
   },
 });
-export default Transcation;
+export default memo(Transcation);
