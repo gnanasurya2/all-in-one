@@ -27,6 +27,9 @@ import {
 import {runOnJS} from 'react-native-reanimated';
 import ExpenseCalender from '../../components/ExpenseCalender';
 import {changeMonth} from '../../utils/changeMonth';
+import {parseSmsToExpense} from '../../utils/parseTransactionMessage';
+import {useGetLastInsertedTimestamp} from '../../api/expenseTracker/getLastInsertedTimestamp';
+import {useCreateNewExpense} from '../../api/expenseTracker/createNewExpense';
 
 const FooterComponent = () => {
   return <View style={styles.footer} />;
@@ -42,19 +45,27 @@ const HomeScreen = ({
   const [isCalenderOpen, setIsCalenderOpen] = useState(false);
 
   const {data, isLoading} = useGetTrackedExpenses(currentMonth);
+  const {data: lastInsertedTimestamp} = useGetLastInsertedTimestamp();
   const {mutateAsync: deleteExpenseAync} = useDeleteExpense(
     currentMonth.month,
     currentMonth.year,
   );
+  const {mutate} = useCreateNewExpense();
 
   useEffect(() => {
     NativeReadSms.requestSmsPermission();
-    console.log(
-      'has permission',
-      NativeReadSms.hasSmsPermission(),
-      NativeReadSms.readSms(1730797160275, ['CUBANK']).length,
-    );
-  }, []);
+    if (lastInsertedTimestamp?.timestamp) {
+      const smsData = NativeReadSms.readSms(
+        new Date(lastInsertedTimestamp?.timestamp).getTime() + 1,
+        ['HDFCBK-S'],
+      );
+      console.log('data', smsData.length);
+      if (smsData.length > 0) {
+        const formatedData = parseSmsToExpense(smsData);
+        mutate({data: formatedData});
+      }
+    }
+  }, [lastInsertedTimestamp?.timestamp, mutate]);
 
   const formattedDate = useMemo(
     () =>

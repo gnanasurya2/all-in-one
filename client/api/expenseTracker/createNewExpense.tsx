@@ -9,12 +9,16 @@ export interface Expense {
   created_at: number;
 }
 
+export interface createNewExpenseRequest {
+  data: Array<Expense>;
+}
 export interface createNewExpenseResponse {
   message: string;
-  created_at: string;
+  updated_months: Array<number>;
 }
 
-async function createExpense(prop: Expense) {
+async function createExpense(prop: createNewExpenseRequest) {
+  console.log('data', prop);
   const response = await axios.post<createNewExpenseResponse>(
     '/expense/create',
     {...prop},
@@ -27,14 +31,22 @@ export const useCreateNewExpense = () => {
   const query = useMutation({
     mutationFn: createExpense,
     onSuccess: data => {
-      const date = new Date(data.created_at);
-      queryClient.invalidateQueries({
-        queryKey: [
-          'getTrackedExpense',
-          date.getMonth() + 1,
-          date.getFullYear(),
-        ],
+      data.updated_months.forEach(month => {
+        const date = new Date(month);
+        queryClient.invalidateQueries({
+          queryKey: [
+            'getTrackedExpense',
+            date.getMonth() + 1,
+            date.getFullYear(),
+          ],
+        });
       });
+      queryClient.invalidateQueries({
+        queryKey: ['getLastUpdatedTimeStamp'],
+      });
+    },
+    onError: error => {
+      console.log('error while updating', error.name);
     },
   });
   return query;

@@ -58,8 +58,8 @@ class NativeReadSmsModule(reactContext: ReactApplicationContext): NativeReadSmsS
 
             val cursor = applicationContext.contentResolver.query(uri,
                 columns,
-                "($selection) AND $DATE_COLUMN >= ?",
-                arrayOf(timeStamp.toLong().toString()),
+                "($selection) AND $DATE_COLUMN > ?",
+                arrayOf((timeStamp.toLong() + 1).toString()),
                 "$DATE_COLUMN ASC"
             )
 
