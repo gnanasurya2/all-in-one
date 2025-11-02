@@ -44,7 +44,10 @@ pub async fn backup_db(r2_store: R2Store) {
 
     let file_name = back_up_db_filname(Utc::now());
     let final_path = format!("{}/{}", base_path, file_name);
-    let output = Command::new("mysqldump")
+
+    fs::create_dir_all(&base_path).expect("Failed to create directory");
+
+    let output = Command::new("mariadb-dump")
         .arg("-u")
         .arg("root")
         .arg("-h")
@@ -52,6 +55,7 @@ pub async fn backup_db(r2_store: R2Store) {
         .arg(format!("-p{}", password))
         .arg(db_name)
         .arg("--complete-insert")
+        .arg("--ssl=0")
         .arg("-r")
         .arg(&final_path)
         .output()

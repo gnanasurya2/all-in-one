@@ -88,7 +88,7 @@ const CreateExpenseScreen = ({
         if (data?.id) {
           await mutateExpenseAsync({...newExpense, id: data.id});
         } else {
-          await mutateAsync(newExpense);
+          await mutateAsync({data: [newExpense]});
         }
 
         navigation.navigate('Home');

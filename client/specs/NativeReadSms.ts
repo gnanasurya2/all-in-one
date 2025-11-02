@@ -3,7 +3,7 @@ import {TurboModuleRegistry} from 'react-native';
 
 export type Message = {
   smsId: number;
-  date: number;
+  date: string;
   body: string;
   address: string;
 };
