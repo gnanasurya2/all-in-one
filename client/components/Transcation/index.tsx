@@ -52,7 +52,7 @@ const Transcation = ({
       containerStyle={styles.wrapper}
       onRightActionPressed={onEditPressed}
       onLeftActionPressed={onDeletePressed}>
-      <View style={{backgroundColor: SURFACE_COLORS.PAGE}}>
+      <View style={styles.innerWrapper}>
         <View style={styles.titleWrapper}>
           <Text style={styles.titleText}>{title}</Text>
           <View style={styles.dateWrapper}>
@@ -135,6 +135,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     borderColor: BORDERS_COLORS.SECONDARY,
+    backgroundColor: SURFACE_COLORS.PAGE,
+  },
+  innerWrapper: {
     backgroundColor: SURFACE_COLORS.PAGE,
   },
 });

@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Transcation from '../../components/Transcation';
 import {
   BORDERS_COLORS,
@@ -9,14 +9,14 @@ import {
 } from '../../constants/styles';
 import NativeReadSms from '../../specs/NativeReadSms';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {ExpenseTrackerParamList} from '../../navigation/ExpenseTrackerNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ExpenseTrackerParamList } from '../../navigation/ExpenseTrackerNavigator';
 import {
   formattedExpense,
   useGetTrackedExpenses,
 } from '../../api/expenseTracker/getTrackedExpenses';
 import Loader from '../../components/Loader';
-import {useDeleteExpense} from '../../api/expenseTracker/deleteExpense';
+import { useDeleteExpense } from '../../api/expenseTracker/deleteExpense';
 import NumberCounter from '../../components/NumberCounter';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 import {
@@ -24,16 +24,39 @@ import {
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
-import {runOnJS} from 'react-native-reanimated';
+import { runOnJS } from 'react-native-reanimated';
 import ExpenseCalender from '../../components/ExpenseCalender';
-import {changeMonth} from '../../utils/changeMonth';
-import {parseSmsToExpense} from '../../utils/parseTransactionMessage';
-import {useGetLastInsertedTimestamp} from '../../api/expenseTracker/getLastInsertedTimestamp';
-import {useCreateNewExpense} from '../../api/expenseTracker/createNewExpense';
+import { changeMonth } from '../../utils/changeMonth';
+import { parseSmsToExpense } from '../../utils/parseTransactionMessage';
+import { useGetLastInsertedTimestamp } from '../../api/expenseTracker/getLastInsertedTimestamp';
+import { useCreateNewExpense } from '../../api/expenseTracker/createNewExpense';
 
 const FooterComponent = () => {
   return <View style={styles.footer} />;
 };
+
+interface TranscationItemProps {
+  item: formattedExpense;
+  onEdit: (item: formattedExpense) => void;
+  onDelete: (id: number) => void;
+}
+
+const TranscationItem = memo(
+  ({ item, onEdit, onDelete }: TranscationItemProps) => {
+    const handleEdit = useCallback(() => onEdit(item), [onEdit, item]);
+    const handleDelete = useCallback(
+      () => onDelete(item.id),
+      [onDelete, item.id],
+    );
+    return (
+      <Transcation
+        {...item}
+        onEditPressed={handleEdit}
+        onDeletePressed={handleDelete}
+      />
+    );
+  },
+);
 
 const HomeScreen = ({
   navigation,
@@ -44,25 +67,25 @@ const HomeScreen = ({
   });
   const [isCalenderOpen, setIsCalenderOpen] = useState(false);
 
-  const {data, isLoading} = useGetTrackedExpenses(currentMonth);
-  const {data: lastInsertedTimestamp} = useGetLastInsertedTimestamp();
-  const {mutateAsync: deleteExpenseAync} = useDeleteExpense(
+  const { data, isLoading } = useGetTrackedExpenses(currentMonth);
+  const { data: lastInsertedTimestamp } = useGetLastInsertedTimestamp();
+  const { mutateAsync: deleteExpenseAync } = useDeleteExpense(
     currentMonth.month,
     currentMonth.year,
   );
-  const {mutate} = useCreateNewExpense();
+  const { mutate } = useCreateNewExpense();
 
   useEffect(() => {
     NativeReadSms.requestSmsPermission();
     if (lastInsertedTimestamp?.timestamp) {
       const smsData = NativeReadSms.readSms(
         new Date(lastInsertedTimestamp?.timestamp).getTime() + 1,
-        ['HDFCBK-S'],
+        ['HDFCBK-'],
       );
       console.log('data', smsData.length);
       if (smsData.length > 0) {
         const formatedData = parseSmsToExpense(smsData);
-        mutate({data: formatedData});
+        mutate({ data: formatedData });
       }
     }
   }, [lastInsertedTimestamp?.timestamp, mutate]);
@@ -105,17 +128,26 @@ const HomeScreen = ({
     return Gesture.Simultaneous(rightGesture, leftGesture);
   }, [currentMonth]);
 
-  const keyExtractor = useCallback(({id}: {id: number}) => id.toString(), []);
+  const keyExtractor = useCallback(({ id }: { id: number }) => id.toString(), []);
+
+  const handleEdit = useCallback(
+    (item: formattedExpense) =>
+      navigation.navigate('Create', { data: { ...item } }),
+    [navigation],
+  );
+
+  const handleDelete = useCallback(
+    (id: number) => {
+      deleteExpenseAync(id);
+    },
+    [deleteExpenseAync],
+  );
 
   const renderItem = useCallback(
-    ({item}: {item: formattedExpense}) => (
-      <Transcation
-        {...item}
-        onEditPressed={() => navigation.navigate('Create', {data: {...item}})}
-        onDeletePressed={async () => await deleteExpenseAync(item.id)}
-      />
+    ({ item }: { item: formattedExpense }) => (
+      <TranscationItem item={item} onEdit={handleEdit} onDelete={handleDelete} />
     ),
-    [deleteExpenseAync, navigation],
+    [handleEdit, handleDelete],
   );
 
   return (
@@ -177,6 +209,10 @@ const HomeScreen = ({
           ListFooterComponent={FooterComponent}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          initialNumToRender={10}
+          removeClippedSubviews
         />
       ) : (
         <Loader />
@@ -199,7 +235,7 @@ const styles = StyleSheet.create({
     borderBottomColor: BORDERS_COLORS.SECONDARY,
     width: '100%',
   },
-  list: {flex: 1, width: '100%', padding: 16},
+  list: { flex: 1, width: '100%', padding: 16 },
   createButton: {
     position: 'absolute',
     bottom: 0,
@@ -220,8 +256,8 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontFamily: FONT_FAMILY.GT_WALSHEIM_PRO_BOLD,
   },
-  footer: {marginBottom: 16},
-  errorText: {color: TEXT_COLORS.ERROR},
-  successText: {color: TEXT_COLORS.SUCCESS},
+  footer: { marginBottom: 16 },
+  errorText: { color: TEXT_COLORS.ERROR },
+  successText: { color: TEXT_COLORS.SUCCESS },
 });
 export default HomeScreen;

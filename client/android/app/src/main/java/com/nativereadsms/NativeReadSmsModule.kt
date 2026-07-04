@@ -87,6 +87,12 @@ class NativeReadSmsModule(reactContext: ReactApplicationContext): NativeReadSmsS
         return messages
     }
 
+    override fun readAllSmsFromId(smsId: Double): WritableArray {
+        val messages = Arguments.createArray()
+
+        return messages;
+    }
+
     companion object {
         const val NAME = "NativeReadSms"
         private const val ADDRESS_COLUMN = Sms.ADDRESS

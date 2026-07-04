@@ -37,7 +37,9 @@ export default function SignInScreen({
     setIsLoading(true);
     try {
       await signIn?.({ ...data });
-    } catch (err) {}
+    } catch (err) {
+      console.log("[gnanasurya] err", err)
+    }
 
     setIsLoading(false);
   };

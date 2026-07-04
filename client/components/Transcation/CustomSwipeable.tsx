@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Animated, {
   Extrapolation,
@@ -108,16 +108,24 @@ const CustomSwipeable = ({
   onRightActionPressed: () => void;
   onLeftActionPressed: () => void;
 }) => {
+  const handleRightActions = useCallback(
+    (_: SharedValue<number>, progress: SharedValue<number>) =>
+      renderRightActions({progress, onRightActionPressed}),
+    [onRightActionPressed],
+  );
+
+  const handleLeftActions = useCallback(
+    (_: SharedValue<number>, progress: SharedValue<number>) =>
+      renderLeftActions({progress, onLeftActionPressed}),
+    [onLeftActionPressed],
+  );
+
   return (
     <Swipeable
       containerStyle={containerStyle}
       friction={3}
-      renderRightActions={(_, progress) =>
-        renderRightActions({progress, onRightActionPressed})
-      }
-      renderLeftActions={(_, progress) =>
-        renderLeftActions({progress, onLeftActionPressed})
-      }>
+      renderRightActions={handleRightActions}
+      renderLeftActions={handleLeftActions}>
       {children}
     </Swipeable>
   );
